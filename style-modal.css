@@ -1,0 +1,110 @@
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 1000;
+}
+
+.modal-content, .modal-content-large {
+    background-color: white;
+    margin: 5% auto;
+    padding: 25px;
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal-content { max-width: 400px; }
+.modal-content-large { width: 90%; max-height: 85vh; overflow-y: auto; }
+
+.close-btn {
+    position: absolute; top: 15px; right: 20px;
+    font-size: 25px; cursor: pointer; color: #888;
+}
+
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.input-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+
+.btn-submit { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
+
+/* Giao diện lưới ảnh bên trong album */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.photo-item {
+    width: 100%; height: 180px; object-fit: cover;
+    border-radius: 8px; transition: 0.3s; cursor: pointer;
+}
+
+.photo-item:hover { transform: scale(1.03); }
+
+.btn-add-more {
+    display: inline-block; padding: 10px 20px;
+    background: #27ae60; color: white; border-radius: 5px; cursor: pointer;
+}
+/* Lớp phủ phóng to ảnh */
+#photoViewer {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 2000;
+    cursor: zoom-out;
+    align-items: center;
+    justify-content: center;
+}
+
+#photoViewer img {
+    max-width: 90%;
+    max-height: 90%;
+    border: 3px solid white;
+    border-radius: 5px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+/* Căn hàng cho tiêu đề và nút trong tab chi tiết */
+.detail-header {
+    display: flex;
+    justify-content: space-between; /* Đẩy 2 phần về 2 phía */
+    align-items: center; /* Canh giữa theo chiều dọc */
+    margin-bottom: 15px;
+    padding-right: 40px; /* Tránh đè lên nút dấu X đóng modal */
+}
+
+.detail-title-group h2 {
+    margin: 0;
+    color: #2c3e50;
+}
+
+.detail-title-group p {
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+}
+
+.btn-add-more {
+    background-color: #27ae60;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    white-space: nowrap; /* Không cho chữ bị xuống hàng */
+}
+
+.btn-add-more:hover {
+    background-color: #2ecc71;
+}
+
+/* Điều chỉnh lại đường gạch ngang */
+hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin-bottom: 20px;
+}

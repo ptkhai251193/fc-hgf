@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <style>
+        .title-member {
+    /* 1. Chọn màu chữ (Màu vàng sáng) */
+    color: #FFD700; 
+    
+    /* 2. Căn giữa và chọn cỡ chữ */
+    text-align: center;
+    font-size: 35px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    
+    /* 3. Đổ bóng đen phía sau (Cực kỳ quan trọng để tách chữ khỏi hình nền) */
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.9);
+    
+    /* 4. Font chữ (nên dùng font không chân cho hiện đại) */
+    font-family: 'Arial', sans-serif;
+    
+    /* 5. Hiệu ứng chữ in hoa */
+    text-transform: uppercase;
+    letter-spacing: 2px; /* Khoảng cách giữa các chữ cái */
+}
+        #thanh-vien-page {
+        /* Thiết lập hình nền */
+        background-image: url('blackground.jpg'); 
+        background-size: cover;        /* Phủ kín toàn bộ màn hình */
+        background-position: center;   /* Căn giữa ảnh */
+        background-attachment: fixed;  /* Hình nền đứng yên khi cuộn (tùy chọn) */
+        background-repeat: no-repeat;
+        min-height: 100vh;             /* Đảm bảo chiều cao phủ hết màn hình */
+    }
+
+    /* Thêm một lớp phủ mờ để chữ dễ đọc hơn (nếu ảnh quá sáng) */
+    #thanh-vien-page::before {
+        content: "";
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255, 255, 255, 0.7); /* Màu trắng mờ 70% */
+        z-index: -1;
+    }
+        /* Khi trang thành viên hiển thị (không bị ẩn) */
+    body:has(#thanh-vien-page[style*="display: block"]) .top-banner,
+    body:has(#thanh-vien-page[style*="display: block"]) .main-heading,
+    body:has(#thanh-vien-page[style*="display: block"]) #main-content {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư Viện Ảnh Kỷ Niệm</title>
+    <link rel="stylesheet" href="style-layout.css">
+    <link rel="stylesheet" href="style-modal.css">
+</head>
+<div id="thanh-vien-page" class="sub-page" style="display: none;">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="title-member">THÀNH VIÊN HGF</h2>
+            <div class="button-group">
+                <button class="add-btn" style="background: #0ae307;" onclick="toggleAddMemberForm()">+ Thêm Thành Viên</button>
+                <button class="add-btn" onclick="goBackHome()">← Quay lại</button>
+            </div>
+        </div>
+
+        <div id="addMemberForm" class="member-form" style="display: none;">
+            <h3>Thông Tin Cầu Thủ Mới</h3>
+            <div class="form-grid">
+                <input type="text" id="memName" placeholder="Họ và tên">
+                <input type="date" id="memBirth" placeholder="Ngày sinh" onchange="calculateAge()">
+                <input type="number" id="memAge" placeholder="Tuổi" readonly>
+                <input type="number" id="memNumber" placeholder="Số áo">
+                <input type="file" id="memImg" accept="image/*">
+            </div>
+            <button class="save-btn" onclick="addMember()">Lưu Thành Viên</button>
+        </div>
+
+        <div id="memberGrid" class="member-grid">
+            </div>
+    </div>
+</div>
+<body>
+
+<body>
+    <div class="top-banner">
+        <img src="hinhnen.jpg" alt="Banner đội bóng">
+    </div>
+
+    <header class="main-heading">
+    <div class="container-header">
+        <div class="header-left">
+            <div class="menu-container">
+    <div class="menu-icon" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div id="sideMenu" class="side-menu">
+        <div class="menu-header">
+            <h3>DANH MỤC</h3>
+            <span class="close-btn" onclick="toggleMenu()">&times;</span>
+        </div>
+        <ul class="menu-list">
+            <li onclick="showTab('thanh-vien')">THÀNH VIÊN</li>
+            <li onclick="showTab('thanh-tich')">THÀNH TÍCH</li>
+        </ul>
+    </div>
+</div>
+
+<div id="tabContentOverlay" class="tab-overlay" onclick="closeTab()">
+    <div class="tab-card" onclick="event.stopPropagation()">
+        <span class="close-tab" onclick="closeTab()">&times;</span>
+        <div id="tabInnerContent">
+            </div>
+    </div>
+</div>
+            <img src="logo.png" alt="Logo" class="logo-img">
+            <div class="header-info">
+                <span class="team-text">FC.HGF</span>
+                <p class="team-desc">"Nơi lưu giữ những bước chạy, những bàn thắng và tinh thần đồng đội bất diệt. Mỗi tấm hình là một câu chuyện, mỗi album là một hành trình."</p>
+            </div>
+        </div>
+        </div>
+</header>
+
+<div id="main-content">
+<main class="content-area">
+    <div class="section-header-group">
+        <div class="section-label">ÁO ĐẤU</div>
+        <button id="btnOpenModalJersey" class="btn-create-small">+ Thêm Áo Đấu</button>
+    </div>
+    <div id="jerseyContainer" class="jersey-grid"></div>
+
+    <hr class="section-divider">
+
+    <div class="section-header-group">
+        <div class="section-label">ALBUM KỶ NIỆM</div>
+        <button id="btnOpenModal" class="btn-create-small">Tạo Album Mới</button>
+    </div>
+    <div id="albumContainer" class="album-grid"></div>
+    <hr class="section-divider">
+
+    <div class="section-header-group">
+        <div class="section-label">VIDEOS KỶ NIỆM</div>
+        <button id="btnOpenModalVideo" class="btn-create-small">+ Thêm Video</button>
+    </div>
+    
+    <div id="videoContainer" class="album-grid">
+        </div>
+</main>
+</div>
+
+    <div id="modalCreateAlbum" class="modal">
+    <div class="modal-content">
+        <span id="btnCloseModal" class="close-btn">&times;</span>
+        <h2>Thêm Album Mới</h2>
+        <form id="albumForm">
+            <div class="input-group">
+                <label>Tiêu đề:</label>
+                <input type="text" id="inputTitle" placeholder="Nhập tiêu đề..." required>
+            </div>
+            <div class="input-group">
+                <label>Người tạo:</label>
+                <input type="text" id="inputCreator" placeholder="Tên người tạo..." required>
+            </div>
+            <div class="input-group">
+                <label>Ngày tháng:</label>
+                <input type="date" id="inputDate" required>
+            </div>
+            <div class="input-group">
+                <label>Ảnh đại diện Album:</label>
+                <input type="file" id="inputImage" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn-submit">Lưu Album Kỷ Niệm</button>
+        </form>
+    </div>
+</div>
+
+    <div id="modalAlbumDetail" class="modal">
+    <div class="modal-content-large">
+        <span id="btnCloseDetail" class="close-btn">&times;</span>
+        
+        <div class="detail-header">
+            <div class="detail-title-group">
+                <h2 id="detailTitle">Tên Album</h2>
+                <p id="detailInfo"></p>
+            </div>
+            
+            <div class="detail-action-group">
+                <label class="btn-add-more">
+                    + Thêm ảnh
+                    <input type="file" id="inputAddPhotos" accept="image/*" multiple style="display:none;">
+                </label>
+            </div>
+        </div>
+        
+        <hr>
+
+        <div id="photoGrid" class="photo-grid">
+            </div>
+    </div>
+    </div> <div id="modalVideoLink" class="modal">
+    <div class="modal-content">
+        <span onclick="document.getElementById('modalVideoLink').style.display='none'" class="close-btn">&times;</span>
+        <h2>Thêm Video Kỷ Niệm</h2>
+        <div class="input-group">
+            <label>Dán link YouTube hoặc TikTok:</label>
+            <input type="text" id="inputVideoLink" placeholder="Dán link tại đây...">
+        </div>
+        <button onclick="addVideoLink()" class="btn-submit">Lưu Video</button>
+    </div>
+</div>
+
+    <script src="script-ui.js"></script>
+    <script src="script-data.js"></script>
+    <script src="script-detail.js"></script>
+    <div id="photoViewer" onclick="this.style.display='none'">
+    <img id="fullPhoto" src="">
+</div>
+</body>
+</html>
