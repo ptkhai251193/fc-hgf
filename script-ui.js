@@ -110,17 +110,55 @@ function addMember() {
     r.readAsDataURL(file);
 }
 
-function addAlbum() {
+async function addAlbum() {
     const title = document.getElementById('inputTitle').value;
     const date = document.getElementById('inputDate').value;
-    const file = document.getElementById('inputImage').files[0];
-    if (!file) return alert("Chọn ảnh album!");
-    const r = new FileReader();
-    r.onload = (e) => {
-        database.ref('albums').push({ title, date, img: e.target.result })
-        .then(() => { alert("Đã tạo Album!"); document.getElementById('modalCreateAlbum').style.display='none'; });
-    };
-    r.readAsDataURL(file);
+    const fileInput = document.getElementById('inputImage');
+    const files = fileInput.files;
+
+    if (!title || !date || files.length === 0) return alert("Thiếu thông tin hoặc chưa chọn ảnh!");
+
+    // Hiển thị thông báo đang xử lý vì nhiều ảnh sẽ nặng
+    const btn = document.querySelector("#modalCreateAlbum button");
+    const originalText = btn.innerText;
+    btn.innerText = "Đang tải " + files.length + " ảnh... Đợi xíu!";
+    btn.disabled = true;
+
+    try {
+        const photoPromises = [];
+        
+        // Vòng lặp để đọc TẤT CẢ các file bạn đã chọn
+        for (let i = 0; i < files.length; i++) {
+            photoPromises.push(new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(files[i]);
+            }));
+        }
+
+        // Đợi tất cả ảnh chuyển sang dạng dữ liệu xong
+        const allPhotos = await Promise.all(photoPromises);
+
+        // Đẩy lên Firebase: cover là ảnh đầu, photos là mảng tất cả ảnh
+        await database.ref('albums').push({
+            title: title,
+            date: date,
+            cover: allPhotos[0], // Lấy ảnh đầu làm đại diện
+            photos: allPhotos,   // Lưu toàn bộ danh sách ảnh vào đây
+            timestamp: Date.now()
+        });
+
+        alert("Thành công! Đã tạo album với " + files.length + " ảnh.");
+        document.getElementById('modalCreateAlbum').style.display = 'none';
+        // Reset form
+        document.getElementById('inputTitle').value = "";
+        fileInput.value = "";
+    } catch (error) {
+        alert("Lỗi: " + error.message);
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
 }
 
 function addJersey() {
