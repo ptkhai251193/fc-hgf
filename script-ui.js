@@ -201,25 +201,3 @@ function openJerseyUpload() {
         area.style.display = 'none';
     }
 }
-// Lắng nghe ngăn 'jerseys' và vẽ ra màn hình
-database.ref('jerseys').on('value', (snapshot) => {
-    const data = snapshot.val();
-    const container = document.getElementById('jerseyContainer'); // Khớp với ID trong HTML của bạn
-    
-    if (!container) return; // Nếu không tìm thấy chỗ dán ảnh thì thoát
-
-    if (!data) {
-        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có mẫu áo nào được cập nhật.</p>";
-        return;
-    }
-
-    // Chuyển dữ liệu thành danh sách
-    const list = Object.values(data);
-    
-    // Vẽ ảnh ra màn hình
-    container.innerHTML = list.map(item => `
-        <div style="display: inline-block; margin: 10px; text-align: center;">
-            <img src="${item.img}" style="width: 180px; border: 3px solid #6CABDD; border-radius: 15px; background: white; padding: 5px;">
-        </div>
-    `).reverse().join(''); // Áo mới nhất lên đầu
-});
