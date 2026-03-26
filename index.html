@@ -81,16 +81,18 @@
         <img src="hinhnen.jpg" alt="Banner">
     </div>
 
-    <header class="main-heading" style="background: rgba(255,182,193,0.9); padding: 10px 0; border-bottom: 2px solid rgba(255,255,255,0.2);">
-    <div class="container-header" style="max-width: 1200px; margin: 0 auto;">
-        
-        <div style="display: flex; align-items: center; gap: 12px; padding: 0 15px; margin-bottom: 5px;">
+    <header class="main-heading" style="background: rgba(255,182,193,0.9); padding: 10px 0; display: flex; align-items: center;">
+        <div class="container-header" style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 15px; padding: 0 15px; width: 100%;">
             <div class="menu-icon" onclick="toggleMenu()" style="cursor:pointer; font-size: 24px; color: black;">☰</div>
+            
+            <img src="logo.png" alt="Logo FC.HGF" style="width: 50px; height: 50px; object-fit: contain; display: block;">
+            
+            <span style="font-size: 24px; color: black; font-weight: bold; font-family: sans-serif;">FC.HGF</span>
         </div>
-    </div>
-</header>
-</header> <div style="background: rgba(255,255,255,0.9); overflow: hidden; white-space: nowrap; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.1); box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <marquee behavior="scroll" direction="left" scrollamount="6" style="color: #333; font-style: italic; font-size: 14px; font-weight: 500; font-family: 'Times New Roman', serif;">
+    </header>
+
+    <div id="marquee-container" style="background: #fff; overflow: hidden; white-space: nowrap; padding: 12px 0; border-bottom: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
+        <marquee behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" style="color: #333; font-style: italic; font-size: 15px; font-weight: 600; font-family: 'Times New Roman', serif; display: block;">
             "Nơi lưu giữ những bước chạy, những bàn thắng và tinh thần đồng đội bất diệt. Mỗi tấm hình là một câu chuyện, mỗi album là một hành trình."
         </marquee>
     </div>
