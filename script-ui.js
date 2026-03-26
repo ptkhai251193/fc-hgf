@@ -1,12 +1,12 @@
 // 1. Cấu hình Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
-  authDomain: "fc-hgf.firebaseapp.com",
-  databaseURL: "https://fc-hgf-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "fc-hgf",
-  storageBucket: "fc-hgf.firebasestorage.app",
-  messagingSenderId: "1057951855896",
-  appId: "1:1057951855896:web:6a50e64266f8ebaf339a6d"
+    apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
+    authDomain: "fc-hgf.firebaseapp.com",
+    databaseURL: "https://fc-hgf-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "fc-hgf",
+    storageBucket: "fc-hgf.firebasestorage.app",
+    messagingSenderId: "1057951855896",
+    appId: "1:1057951855896:web:6a50e64266f8ebaf339a6d"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -71,8 +71,7 @@ database.ref('albums').on('value', (snapshot) => {
 function addAlbum() {
     const title = document.getElementById('inputTitle').value;
     const date = document.getElementById('inputDate').value;
-    const imgInput = document.getElementById('inputImage'); // Khớp với ID HTML của bạn
-
+    const imgInput = document.getElementById('inputImage');
     if (!imgInput.files[0]) { alert("Chọn ảnh đại diện album!"); return; }
 
     const reader = new FileReader();
@@ -89,41 +88,48 @@ function addAlbum() {
 // ==========================================
 // 4. XỬ LÝ ÁO ĐẤU (JERSEYS)
 // ==========================================
-database.ref('jerseys').on('value', (snapshot) => {
-    const data = snapshot.val();
-    const container = document.getElementById('jerseyContainer');
-    if (!container || !data) return;
-    const list = Object.values(data);
-    container.innerHTML = list.map(item => `
-        <img src="${item.img}" style="width:150px; border:2px solid #6CABDD; border-radius:10px; margin:10px;">
-    `).join('');
-});
+function openJerseyUpload() {
+    const area = document.getElementById('jerseyUploadArea');
+    if (area) {
+        area.style.display = (area.style.display === 'none' || area.style.display === '') ? 'block' : 'none';
+    }
+}
 
 function addJersey() {
     const imgInput = document.getElementById('jerseyImgInput');
-    
     if (imgInput && imgInput.files && imgInput.files[0]) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            const imgSrc = e.target.result;
-            
-            // Đẩy lên Firebase
             database.ref('jerseys').push({
-                img: imgSrc,
+                img: e.target.result,
                 timestamp: Date.now()
             }).then(() => {
                 alert("Đã cập nhật mẫu áo đấu mới!");
                 document.getElementById('jerseyUploadArea').style.display = 'none';
-                imgInput.value = ""; // Xóa file để lần sau chọn lại
-            }).catch((error) => {
-                alert("Lỗi Firebase: " + error.message);
+                imgInput.value = ""; 
             });
         };
         reader.readAsDataURL(imgInput.files[0]);
     } else {
-        alert("Vui lòng chọn một tấm ảnh áo đấu trước!");
+        alert("Vui lòng chọn ảnh áo đấu!");
     }
 }
+
+database.ref('jerseys').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const container = document.getElementById('jerseyContainer');
+    if (!container) return;
+    if (!data) {
+        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có mẫu áo nào.</p>";
+        return;
+    }
+    const list = Object.values(data);
+    container.innerHTML = list.map(item => `
+        <div style="display: inline-block; margin: 10px; text-align: center;">
+            <img src="${item.img}" style="width: 180px; border: 3px solid #6CABDD; border-radius: 15px; background: white; padding: 5px;">
+        </div>
+    `).reverse().join('');
+});
 
 // ==========================================
 // 5. XỬ LÝ VIDEO KỶ NIỆM (VIDEOS)
@@ -150,76 +156,4 @@ function addVideoLink() {
 }
 
 // ==========================================
-// 6. CÁC HÀM GIAO DIỆN
-// ==========================================
-function showTab(tabName) {
-    if (tabName === 'thanh-vien') {
-        document.querySelector('.top-banner').style.display = 'none';
-        document.querySelector('.main-heading').style.display = 'none';
-        document.getElementById('main-content').style.display = 'none';
-        document.getElementById('thanh-vien-page').style.display = 'block';
-    }
-}
-function goBackHome() {
-    location.reload(); // Cách nhanh nhất để quay lại trang chủ và cập nhật dữ liệu
-}
-function toggleAddMemberForm() {
-    const form = document.getElementById('addMemberForm');
-    form.style.display = (form.style.display === 'none') ? 'block' : 'none';
-}
-function deleteMember(id) {
-    const pass = prompt("Mật khẩu xóa:");
-    if (pass === "HGF2026") database.ref('members/' + id).remove();
-}
-// Hàm mở Modal Album
-function openAlbumModal() {
-    document.getElementById('modalCreateAlbum').style.display = 'block';
-}
-
-// Hàm đóng Modal Album (nếu cần nút X hoạt động)
-document.getElementById('btnCloseModal').onclick = function() {
-    document.getElementById('modalCreateAlbum').style.display = 'none';
-};
-
-function openJerseyUpload() {
-    const area = document.getElementById('jerseyUploadArea');
-    if (area) {
-        area.style.display = (area.style.display === 'none' || area.style.display === '') ? 'block' : 'none';
-    }
-}
-
-// Hàm mở Modal Video
-function openVideoModal() {
-    document.getElementById('modalVideoLink').style.display = 'block';
-}
-// Hàm để hiện/ẩn khu vực chọn ảnh áo đấu
-function openJerseyUpload() {
-    const area = document.getElementById('jerseyUploadArea');
-    if (area.style.display === 'none' || area.style.display === '') {
-        area.style.display = 'block';
-    } else {
-        area.style.display = 'none';
-    }
-}
-// Lắng nghe ngăn 'jerseys' và vẽ ra màn hình
-database.ref('jerseys').on('value', (snapshot) => {
-    const data = snapshot.val();
-    const container = document.getElementById('jerseyContainer'); // Khớp với ID trong HTML của bạn
-    
-    if (!container) return; // Nếu không tìm thấy chỗ dán ảnh thì thoát
-
-    if (!data) {
-        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có mẫu áo nào được cập nhật.</p>";
-        return;
-    }
-
-    // Chuyển dữ liệu thành danh sách
-    const list = Object.values(data);
-    
-    // Vẽ ảnh ra màn hình
-    container.innerHTML = list.map(item => `
-        <div style="display: inline-block; margin: 10px; text-align: center;">
-            <img src="${item.img}" style="width: 180px; border: 3px solid #6CABDD; border-radius: 15px; background: white; padding: 5px;">
-        </div>
-    `).reverse().join(''); // Áo mới nhất lên đầu
-});
+// 6. CÁC HÀM GIA
