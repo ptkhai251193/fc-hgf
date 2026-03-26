@@ -102,27 +102,26 @@ database.ref('jerseys').on('value', (snapshot) => {
 function addJersey() {
     const imgInput = document.getElementById('jerseyImgInput');
     
-    if (imgInput.files && imgInput.files[0]) {
+    if (imgInput && imgInput.files && imgInput.files[0]) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const imgSrc = e.target.result;
             
-            // Đẩy lên ngăn 'jerseys'
+            // Đẩy lên Firebase
             database.ref('jerseys').push({
                 img: imgSrc,
                 timestamp: Date.now()
             }).then(() => {
-                alert("Đã cập nhật mẫu áo đấu mới thành công!");
-                // Ẩn khung chọn ảnh đi cho gọn
+                alert("Đã cập nhật mẫu áo đấu mới!");
                 document.getElementById('jerseyUploadArea').style.display = 'none';
-                imgInput.value = ""; // Xóa file cũ
+                imgInput.value = ""; // Xóa file để lần sau chọn lại
             }).catch((error) => {
-                alert("Lỗi: " + error.message);
+                alert("Lỗi Firebase: " + error.message);
             });
         };
         reader.readAsDataURL(imgInput.files[0]);
     } else {
-        alert("Vui lòng chọn ảnh mẫu áo trước khi bấm xác nhận!");
+        alert("Vui lòng chọn một tấm ảnh áo đấu trước!");
     }
 }
 
@@ -182,10 +181,11 @@ document.getElementById('btnCloseModal').onclick = function() {
     document.getElementById('modalCreateAlbum').style.display = 'none';
 };
 
-// Hàm mở khu vực tải Áo Đấu
 function openJerseyUpload() {
     const area = document.getElementById('jerseyUploadArea');
-    area.style.display = (area.style.display === 'none') ? 'block' : 'none';
+    if (area) {
+        area.style.display = (area.style.display === 'none' || area.style.display === '') ? 'block' : 'none';
+    }
 }
 
 // Hàm mở Modal Video
@@ -201,3 +201,25 @@ function openJerseyUpload() {
         area.style.display = 'none';
     }
 }
+// Lắng nghe ngăn 'jerseys' và vẽ ra màn hình
+database.ref('jerseys').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const container = document.getElementById('jerseyContainer'); // Khớp với ID trong HTML của bạn
+    
+    if (!container) return; // Nếu không tìm thấy chỗ dán ảnh thì thoát
+
+    if (!data) {
+        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có mẫu áo nào được cập nhật.</p>";
+        return;
+    }
+
+    // Chuyển dữ liệu thành danh sách
+    const list = Object.values(data);
+    
+    // Vẽ ảnh ra màn hình
+    container.innerHTML = list.map(item => `
+        <div style="display: inline-block; margin: 10px; text-align: center;">
+            <img src="${item.img}" style="width: 180px; border: 3px solid #6CABDD; border-radius: 15px; background: white; padding: 5px;">
+        </div>
+    `).reverse().join(''); // Áo mới nhất lên đầu
+});
