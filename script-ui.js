@@ -31,7 +31,6 @@ database.ref('members').on('value', (s) => {
     `).join('');
 });
 
-// Lắng nghe Album
 database.ref('albums').on('value', (s) => {
     const data = s.val();
     const container = document.getElementById('albumContainer');
@@ -41,7 +40,7 @@ database.ref('albums').on('value', (s) => {
     const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
     container.innerHTML = list.map(a => `
         <div class="album-card" style="margin:10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; display:inline-block; width:250px; position:relative;">
-            <button onclick="deleteData('albums/${a.id}')" style="position:absolute; top:-5px; left:-5px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10; font-weight:bold;">×</button>
+            <span onclick="deleteData('albums/${a.id}')" style="position:absolute; top:5px; right:10px; color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
             
             <img src="${a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover;">
             <h4 style="color:#ffcc00; margin:5px 0;">${a.title}</h4>
@@ -60,7 +59,7 @@ database.ref('jerseys').on('value', (s) => {
     const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
     container.innerHTML = list.map(item => `
         <div style="display:inline-block; margin:10px; position:relative;">
-            <button onclick="deleteData('jerseys/${item.id}')" style="position:absolute; top:-5px; left:-5px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:50%; width:22px; height:22px; cursor:pointer; z-index:10;">×</button>
+            <span onclick="deleteData('jerseys/${item.id}')" style="position:absolute; top:5px; right:10px; color:rgba(0,0,0,0.4); font-size:22px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
             
             <img src="${item.img}" style="width:160px; border:3px solid #6CABDD; border-radius:12px; background:white; padding:5px;">
         </div>
@@ -78,7 +77,7 @@ database.ref('videos').on('value', (s) => {
         let videoId = v.url.includes('v=') ? v.url.split('v=')[1].split('&')[0] : v.url.split('/').pop();
         return `
             <div style="margin-bottom:20px; position:relative; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
-                <button onclick="deleteData('videos/${v.id}')" style="position:absolute; top:-8px; left:-8px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
+                <span onclick="deleteData('videos/${v.id}')" style="position:absolute; top:5px; right:15px; color:rgba(255,255,255,0.6); font-size:25px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
                 
                 <iframe width="100%" height="210" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="border-radius:8px;"></iframe>
             </div>
