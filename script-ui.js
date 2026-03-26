@@ -113,50 +113,59 @@ function addMember() {
 }
 
 async function addAlbum() {
+    // 1. Lấy dữ liệu từ các ô nhập
     const title = document.getElementById('inputTitle').value.trim();
-    const author = document.getElementById('inputAuthor').value.trim(); // Lấy tên từ ô mới tạo
+    const author = document.getElementById('inputAuthor') ? document.getElementById('inputAuthor').value.trim() : ""; // Kiểm tra nếu ô Người đăng tồn tại
     const date = document.getElementById('inputDate').value;
     const fileInput = document.getElementById('inputImage');
     const files = fileInput.files;
 
-    // Kiểm tra thêm điều kiện người đăng
-    if (!title || !author || !date || files.length === 0) {
-        return alert("Vui lòng nhập đầy đủ Tiêu đề, Người đăng, Ngày và Ảnh!");
-    }
+    // 2. Kiểm tra điều kiện (Nếu thiếu sẽ báo Alert và dừng lại)
+    if (!title) return alert("Bạn chưa nhập Tiêu đề Album!");
+    if (!author) return alert("Bạn chưa nhập Tên người đăng!");
+    if (!date) return alert("Bạn chưa chọn Ngày tháng!");
+    if (files.length === 0) return alert("Bạn chưa chọn ảnh nào!");
 
-    const btn = document.querySelector("#modalCreateAlbum .btn-submit");
+    // 3. Hiển thị trạng thái đang xử lý
+    const btn = document.querySelector("#modalCreateAlbum .btn-submit") || document.querySelector("#modalCreateAlbum button[onclick='addAlbum()']");
     const originalText = btn.innerText;
-    btn.innerText = "Đang xử lý...";
+    btn.innerText = `⏳ Đang tải ${files.length} ảnh...`;
     btn.disabled = true;
 
     try {
         const photoPromises = [];
+        // Chuyển đổi tất cả ảnh sang dạng dữ liệu
         for (let i = 0; i < files.length; i++) {
-            photoPromises.push(fileToDataURL(files[i]));
+            photoPromises.push(new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(files[i]);
+            }));
         }
 
         const allPhotos = await Promise.all(photoPromises);
 
-        // Đẩy lên Firebase kèm thông tin người đăng
+        // 4. Đẩy lên Firebase (Lưu cả mảng ảnh và Người đăng)
         await database.ref('albums').push({
             title: title,
-            author: author, // Lưu tên người đăng vào database
+            author: author, // Lưu tên người đăng
             date: date,
-            cover: allPhotos[0],
-            photos: allPhotos,
+            cover: allPhotos[0], // Lấy ảnh đầu làm đại diện
+            photos: allPhotos,   // Danh sách tất cả ảnh
             timestamp: Date.now()
         });
 
-        alert(`Thành công! Album đã được đăng bởi ${author}`);
+        alert(`✅ Thành công! Đã tạo Album '${title}' (Đăng bởi: ${author})`);
         
-        // Reset form và đóng modal
+        // 5. Reset và đóng bảng
         document.getElementById('inputTitle').value = "";
-        document.getElementById('inputAuthor').value = ""; // Xóa trắng ô sau khi xong
-        document.getElementById('inputImage').value = "";
+        if(document.getElementById('inputAuthor')) document.getElementById('inputAuthor').value = "";
+        document.getElementById('inputDate').value = "";
+        fileInput.value = "";
         document.getElementById('modalCreateAlbum').style.display = 'none';
 
     } catch (error) {
-        alert("Lỗi: " + error.message);
+        alert("❌ Lỗi hệ thống: " + error.message);
     } finally {
         btn.innerText = originalText;
         btn.disabled = false;
