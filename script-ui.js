@@ -37,12 +37,15 @@ database.ref('albums').on('value', (s) => {
     const container = document.getElementById('albumContainer');
     if (!container) return;
     if (!data) { container.innerHTML = "<p style='color:white;'>Chưa có album.</p>"; return; }
-    const list = Object.values(data);
+    
+    const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
     container.innerHTML = list.map(a => `
-        <div class="album-card" style="margin:10px;background:rgba(0,0,0,0.5);padding:10px;border-radius:10px;display:inline-block;width:250px;">
-            <img src="${a.img}" style="width:100%;border-radius:5px;">
-            <h4 style="color:#ffcc00;margin:5px 0;">${a.title}</h4>
-            <p style="color:#ccc;font-size:12px;">${a.date}</p>
+        <div class="album-card" style="margin:10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; display:inline-block; width:250px; position:relative;">
+            <button onclick="deleteData('albums/${a.id}')" style="position:absolute; top:-5px; left:-5px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10; font-weight:bold;">×</button>
+            
+            <img src="${a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover;">
+            <h4 style="color:#ffcc00; margin:5px 0;">${a.title}</h4>
+            <p style="color:#ccc; font-size:12px;">${a.date}</p>
         </div>
     `).reverse().join('');
 });
@@ -52,10 +55,14 @@ database.ref('jerseys').on('value', (s) => {
     const data = s.val();
     const container = document.getElementById('jerseyContainer');
     if (!container) return;
-    const list = data ? Object.values(data) : [];
+    if (!data) { container.innerHTML = "<p style='color:white;'>Trống.</p>"; return; }
+
+    const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
     container.innerHTML = list.map(item => `
-        <div style="display:inline-block;margin:10px;">
-            <img src="${item.img}" style="width:160px;border:3px solid #6CABDD;border-radius:12px;background:white;padding:5px;">
+        <div style="display:inline-block; margin:10px; position:relative;">
+            <button onclick="deleteData('jerseys/${item.id}')" style="position:absolute; top:-5px; left:-5px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:50%; width:22px; height:22px; cursor:pointer; z-index:10;">×</button>
+            
+            <img src="${item.img}" style="width:160px; border:3px solid #6CABDD; border-radius:12px; background:white; padding:5px;">
         </div>
     `).reverse().join('');
 });
@@ -64,18 +71,16 @@ database.ref('videos').on('value', (s) => {
     const data = s.val();
     const container = document.getElementById('videoContainer');
     if (!container) return;
-    if (!data) { 
-        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có video nào.</p>"; 
-        return; 
-    }
+    if (!data) { container.innerHTML = "<p style='color:white;'>Chưa có video.</p>"; return; }
+
     const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
     container.innerHTML = list.map(v => {
-        // Tự động tách ID từ link Youtube
         let videoId = v.url.includes('v=') ? v.url.split('v=')[1].split('&')[0] : v.url.split('/').pop();
         return `
-            <div style="margin-bottom:20px; position:relative;">
-                <button onclick="deleteData('videos/${v.id}')" style="position:absolute; top:-10px; right:0; background:red; color:white; border:none; border-radius:50%; z-index:10; cursor:pointer;">×</button>
-                <iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>
+            <div style="margin-bottom:20px; position:relative; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
+                <button onclick="deleteData('videos/${v.id}')" style="position:absolute; top:-8px; left:-8px; background:rgba(255,0,0,0.8); color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
+                
+                <iframe width="100%" height="210" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="border-radius:8px;"></iframe>
             </div>
         `;
     }).reverse().join('');
