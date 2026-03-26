@@ -31,16 +31,14 @@
             min-height: 100vh;
         }
 
-        /* Lớp phủ để chữ dễ đọc hơn */
         #thanh-vien-page::before {
             content: "";
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5); /* Đổi thành màu tối cho chuyên nghiệp */
+            background: rgba(0, 0, 0, 0.5); 
             z-index: -1;
         }
 
-        /* Ẩn nội dung chính khi ở trang thành viên */
         body:has(#thanh-vien-page[style*="display: block"]) .top-banner,
         body:has(#thanh-vien-page[style*="display: block"]) .main-heading,
         body:has(#thanh-vien-page[style*="display: block"]) #main-content {
@@ -59,7 +57,6 @@
                     <button class="add-btn" onclick="goBackHome()">← Quay lại</button>
                 </div>
             </div>
-
             <div id="addMemberForm" class="member-form" style="display: none; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
                 <h3 style="color: white;">Thông Tin Cầu Thủ Mới</h3>
                 <div class="form-grid">
@@ -69,7 +66,6 @@
                 </div>
                 <button class="save-btn" onclick="addMember()" style="margin-top: 10px;">Lưu Thành Viên</button>
             </div>
-
             <div id="memberGrid" class="member-grid"></div>
         </div>
     </div>
@@ -97,7 +93,6 @@
                 <div class="section-label" style="color: #FFD700; font-weight: bold;">ÁO ĐẤU</div>
                 <button class="btn-create-small" onclick="openJerseyUpload()">+ Thêm Áo</button>
             </div>
-            
             <div id="jerseyUploadArea" style="display: none; margin: 15px 0; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
                 <input type="file" id="jerseyImgInput" accept="image/*" style="color: white;">
                 <button onclick="addJersey()" style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Xác nhận</button>
@@ -111,6 +106,15 @@
                 <button class="btn-create-small" onclick="openAlbumModal()">Tạo Album</button>
             </div>
             <div id="albumContainer" class="album-grid"></div>
+
+            <hr style="border: 0.5px solid rgba(255,255,255,0.2); margin: 30px 0;">
+
+            <div class="section-header-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-label" style="color: #FFD700; font-weight: bold;">VIDEOS KỶ NIỆM</div>
+                <button class="btn-create-small" onclick="openVideoModal()">+ Thêm Video</button>
+            </div>
+            <div id="videoContainer" class="album-grid" style="margin-top: 20px;"></div>
+
         </main>
     </div>
 
@@ -122,6 +126,15 @@
             <input type="date" id="inputDate" style="width: 100%; margin: 10px 0; padding: 8px;">
             <input type="file" id="inputImage" accept="image/*" style="width: 100%; margin: 10px 0;">
             <button onclick="addAlbum()" style="width: 100%; padding: 10px; background: #0ae307; border: none; color: white; border-radius: 5px;">Lưu Album</button>
+        </div>
+    </div>
+
+    <div id="modalVideoLink" class="modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+        <div class="modal-content" style="background: #222; width: 90%; max-width: 400px; margin: 100px auto; padding: 20px; border-radius: 10px; color: white;">
+            <span onclick="document.getElementById('modalVideoLink').style.display='none'" style="float:right; cursor:pointer;">&times;</span>
+            <h3>Thêm Link Video Youtube</h3>
+            <input type="text" id="inputVideoLink" placeholder="Dán link Youtube tại đây..." style="width: 100%; margin: 15px 0; padding: 10px; border-radius: 5px;">
+            <button onclick="addVideoLink()" style="width: 100%; padding: 10px; background: #007bff; border: none; color: white; border-radius: 5px;">Lưu Video</button>
         </div>
     </div>
 

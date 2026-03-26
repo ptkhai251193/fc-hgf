@@ -169,3 +169,34 @@ function openVideoModal() {
     const modal = document.getElementById('modalVideoLink');
     if (modal) modal.style.display = 'block';
 }
+// Hàm mở bảng thêm video
+function openVideoModal() {
+    const modal = document.getElementById('modalVideoLink');
+    if (modal) {
+        modal.style.display = 'block';
+    } else {
+        alert("Lỗi: Không tìm thấy bảng thêm video!");
+    }
+}
+
+// Hàm gửi link video lên Firebase
+function addVideoLink() {
+    const input = document.getElementById('inputVideoLink');
+    const link = input.value.trim();
+    
+    if (!link) {
+        alert("Bạn chưa dán link video mà!");
+        return;
+    }
+
+    database.ref('videos').push({
+        url: link,
+        timestamp: Date.now()
+    }).then(() => {
+        alert("Đã thêm video thành công!");
+        document.getElementById('modalVideoLink').style.display = 'none';
+        input.value = ""; // Xóa trống ô nhập
+    }).catch((error) => {
+        alert("Lỗi khi lưu: " + error.message);
+    });
+}
