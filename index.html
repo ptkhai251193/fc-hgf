@@ -133,6 +133,10 @@
     <div class="section-header-group">
         <div class="section-label">ÁO ĐẤU</div>
         <button id="btnOpenModalJersey" class="btn-create-small">+ Thêm Áo Đấu</button>
+        <div id="jerseyUploadArea" style="margin: 10px 0; display: none; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+    <input type="file" id="jerseyImgInput" accept="image/*" style="color: white;">
+    <button onclick="addJersey()" style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Xác nhận tải lên</button>
+</div>
     </div>
     <div id="jerseyContainer" class="jersey-grid"></div>
 
@@ -159,25 +163,25 @@
     <div class="modal-content">
         <span id="btnCloseModal" class="close-btn">&times;</span>
         <h2>Thêm Album Mới</h2>
-        <form id="albumForm">
-            <div class="input-group">
-                <label>Tiêu đề:</label>
-                <input type="text" id="inputTitle" placeholder="Nhập tiêu đề..." required>
-            </div>
-            <div class="input-group">
-                <label>Người tạo:</label>
-                <input type="text" id="inputCreator" placeholder="Tên người tạo..." required>
-            </div>
-            <div class="input-group">
-                <label>Ngày tháng:</label>
-                <input type="date" id="inputDate" required>
-            </div>
-            <div class="input-group">
-                <label>Ảnh đại diện Album:</label>
-                <input type="file" id="inputImage" accept="image/*" required>
-            </div>
-            <button type="submit" class="btn-submit">Lưu Album Kỷ Niệm</button>
-        </form>
+        <form id="albumForm" onsubmit="event.preventDefault(); addAlbum();">
+    <div class="input-group">
+        <label>Tiêu đề Album:</label>
+        <input type="text" id="inputTitle" placeholder="Ví dụ: Giao hữu Long Xuyên..." required>
+    </div>
+    <div class="input-group">
+        <label>Người tạo:</label>
+        <input type="text" id="inputCreator" placeholder="Tên bạn..." required>
+    </div>
+    <div class="input-group">
+        <label>Ngày tháng:</label>
+        <input type="date" id="inputDate" required>
+    </div>
+    <div class="input-group">
+        <label>Ảnh đại diện Album:</label>
+        <input type="file" id="inputImage" accept="image/*" required>
+    </div>
+    <button type="submit" class="btn-submit">🚀 Lưu Lên Firebase</button>
+</form>
     </div>
 </div>
 
@@ -215,12 +219,11 @@
         <button onclick="addVideoLink()" class="btn-submit">Lưu Video</button>
     </div>
 </div>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
 
 <script src="script-ui.js"></script>
-    <script src="script-data.js"></script>
-    <script src="script-detail.js"></script>
+<script src="script-data.js"></script> <script src="script-detail.js"></script>
     <div id="photoViewer" onclick="this.style.display='none'">
     <img id="fullPhoto" src="">
 </div>

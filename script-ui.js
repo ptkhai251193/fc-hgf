@@ -114,3 +114,80 @@ function toggleAddMemberForm() {
     const form = document.getElementById('addMemberForm');
     form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
 }
+// --- PHẦN XỬ LÝ ALBUM ẢNH ---
+
+// Hàm này dùng để gửi ảnh Album lên Firebase
+function addAlbum() {
+    const imgInput = document.getElementById('albumImgInput'); // Đảm bảo ID này khớp với file index.html
+    
+    if (imgInput.files && imgInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const imgSrc = e.target.result;
+            
+            // Gửi dữ liệu vào thư mục 'albums' trên Firebase
+            database.ref('albums').push({
+                img: imgSrc,
+                timestamp: Date.now()
+            }).then(() => {
+                alert("Đã thêm ảnh vào Album thành công!");
+                imgInput.value = ""; // Xóa file cũ trong ô chọn
+            }).catch((error) => {
+                alert("Lỗi: " + error.message);
+            });
+        };
+        reader.readAsDataURL(imgInput.files[0]);
+    } else {
+        alert("Vui lòng chọn một tấm ảnh Album!");
+    }
+}
+
+// Hàm này dùng để tự động tải Album từ mạng về màn hình
+database.ref('albums').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const albumGrid = document.getElementById('albumGrid'); // ID nơi hiển thị ảnh
+    if (!albumGrid) return;
+
+    if (!data) {
+        albumGrid.innerHTML = "<p style='color:white;'>Chưa có ảnh album nào.</p>";
+        return;
+    }
+
+    const list = Object.values(data);
+    // Vẽ lại toàn bộ ảnh trong Album
+    albumGrid.innerHTML = list.map(item => `
+        <div class="album-card" style="margin: 10px; display: inline-block;">
+            <img src="${item.img}" style="width: 250px; border-radius: 8px; border: 2px solid #fff;">
+        </div>
+    `).reverse().join(''); // .reverse() để ảnh mới nhất nằm đầu tiên
+});
+// --- PHẦN XỬ LÝ ÁO ĐẤU ---
+
+function addJersey() {
+    const imgInput = document.getElementById('jerseyImgInput');
+    if (imgInput.files && imgInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            database.ref('jerseys').push({
+                img: e.target.result
+            }).then(() => {
+                alert("Đã cập nhật mẫu áo đấu mới!");
+                imgInput.value = "";
+            });
+        };
+        reader.readAsDataURL(imgInput.files[0]);
+    }
+}
+
+database.ref('jerseys').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const jerseyGrid = document.getElementById('jerseyGrid');
+    if (!jerseyGrid || !data) return;
+
+    const list = Object.values(data);
+    jerseyGrid.innerHTML = list.map(item => `
+        <div class="jersey-card">
+            <img src="${item.img}" style="width: 150px; border: 2px dashed #ffcc00; padding: 5px;">
+        </div>
+    `).join('');
+});
