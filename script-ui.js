@@ -236,3 +236,54 @@ function addVideoLink() {
         });
     }
 }
+// Lắng nghe ngăn 'albums' trên Firebase
+database.ref('albums').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const container = document.getElementById('albumContainer'); // ID này khớp với HTML của bạn
+    if (!container) return;
+
+    if (!data) {
+        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có album nào.</p>";
+        return;
+    }
+
+    // Chuyển dữ liệu thành danh sách và vẽ ra màn hình
+    const list = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+    container.innerHTML = list.map(album => `
+        <div class="album-card" onclick="openAlbumDetail('${album.id}')">
+            <img src="${album.img}" style="width:100%; border-radius:10px;">
+            <h3 style="color:#ffcc00; margin:10px 0;">${album.title}</h3>
+            <p style="color:white; font-size:12px;">${album.date} - Bởi: ${album.creator}</p>
+        </div>
+    `).reverse().join(''); // Ảnh mới nhất lên đầu
+});
+// Lắng nghe ngăn 'jerseys' trên Firebase
+database.ref('jerseys').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const container = document.getElementById('jerseyContainer');
+    if (!container || !data) return;
+
+    const list = Object.values(data);
+    container.innerHTML = list.map(item => `
+        <div class="jersey-item">
+            <img src="${item.img}" style="width:180px; border:2px solid #6CABDD; border-radius:10px; margin:10px;">
+        </div>
+    `).join('');
+});
+// Lắng nghe ngăn 'videos' trên Firebase
+database.ref('videos').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const container = document.getElementById('videoContainer');
+    if (!container || !data) return;
+
+    const list = Object.values(data);
+    container.innerHTML = list.map(item => {
+        // Chuyển link YouTube thường thành link nhúng (embed) để xem trực tiếp
+        let videoId = item.url.split('v=')[1] || item.url.split('/').pop();
+        return `
+            <div class="video-card" style="margin:10px;">
+                <iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+            </div>
+        `;
+    }).join('');
+});
