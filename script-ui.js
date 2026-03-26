@@ -99,17 +99,31 @@ database.ref('jerseys').on('value', (snapshot) => {
     `).join('');
 });
 
-// Bạn cần thêm 1 cái <input type="file" id="jerseyImgInput"> vào HTML của bạn
 function addJersey() {
-    const imgInput = document.getElementById('jerseyImgInput'); 
-    if (!imgInput || !imgInput.files[0]) { alert("Chọn ảnh áo đấu!"); return; }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        database.ref('jerseys').push({ img: e.target.result })
-        .then(() => alert("Đã cập nhật áo đấu!"));
-    };
-    reader.readAsDataURL(imgInput.files[0]);
+    const imgInput = document.getElementById('jerseyImgInput');
+    
+    if (imgInput.files && imgInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const imgSrc = e.target.result;
+            
+            // Đẩy lên ngăn 'jerseys'
+            database.ref('jerseys').push({
+                img: imgSrc,
+                timestamp: Date.now()
+            }).then(() => {
+                alert("Đã cập nhật mẫu áo đấu mới thành công!");
+                // Ẩn khung chọn ảnh đi cho gọn
+                document.getElementById('jerseyUploadArea').style.display = 'none';
+                imgInput.value = ""; // Xóa file cũ
+            }).catch((error) => {
+                alert("Lỗi: " + error.message);
+            });
+        };
+        reader.readAsDataURL(imgInput.files[0]);
+    } else {
+        alert("Vui lòng chọn ảnh mẫu áo trước khi bấm xác nhận!");
+    }
 }
 
 // ==========================================
@@ -177,4 +191,13 @@ function openJerseyUpload() {
 // Hàm mở Modal Video
 function openVideoModal() {
     document.getElementById('modalVideoLink').style.display = 'block';
+}
+// Hàm để hiện/ẩn khu vực chọn ảnh áo đấu
+function openJerseyUpload() {
+    const area = document.getElementById('jerseyUploadArea');
+    if (area.style.display === 'none' || area.style.display === '') {
+        area.style.display = 'block';
+    } else {
+        area.style.display = 'none';
+    }
 }
