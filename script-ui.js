@@ -114,7 +114,7 @@ function addMember() {
 
 async function addAlbum() {
     const title = document.getElementById('inputTitle').value.trim();
-    const author = document.getElementById('inputAuthor').value.trim(); // Lấy tên người đăng
+    const author = document.getElementById('inputAuthor').value.trim(); // Lấy tên từ ô mới tạo
     const date = document.getElementById('inputDate').value;
     const fileInput = document.getElementById('inputImage');
     const files = fileInput.files;
