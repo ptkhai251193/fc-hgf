@@ -251,18 +251,16 @@ function addVideoLink() {
         alert("Lỗi khi lưu: " + error.message);
     });
 }
-// Hàm đóng/mở Menu bên trái
 function toggleMenu() {
-    const sidebar = document.getElementById('sidebar'); // Đảm bảo ID này khớp với CSS/HTML của bạn
-    if (sidebar) {
-        if (sidebar.style.display === 'none' || sidebar.style.display === '') {
-            sidebar.style.display = 'block';
-        } else {
-            sidebar.style.display = 'none';
-        }
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+
+    if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+        sidebar.style.display = 'block';
+        // Thêm một chút hiệu ứng lướt (tùy chọn)
+        sidebar.style.animation = "slideIn 0.3s forwards";
     } else {
-        // Nếu bạn dùng Menu dạng danh sách xổ xuống đơn giản
-        alert("Menu đang được bảo trì hoặc thiếu ID sidebar!");
+        sidebar.style.display = 'none';
     }
 }
 
