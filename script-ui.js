@@ -59,7 +59,27 @@ database.ref('jerseys').on('value', (s) => {
         </div>
     `).reverse().join('');
 });
-
+// Lắng nghe Video Kỷ Niệm
+database.ref('videos').on('value', (s) => {
+    const data = s.val();
+    const container = document.getElementById('videoContainer');
+    if (!container) return;
+    if (!data) { 
+        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có video nào.</p>"; 
+        return; 
+    }
+    const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+    container.innerHTML = list.map(v => {
+        // Tự động tách ID từ link Youtube
+        let videoId = v.url.includes('v=') ? v.url.split('v=')[1].split('&')[0] : v.url.split('/').pop();
+        return `
+            <div style="margin-bottom:20px; position:relative;">
+                <button onclick="deleteData('videos/${v.id}')" style="position:absolute; top:-10px; right:0; background:red; color:white; border:none; border-radius:50%; z-index:10; cursor:pointer;">×</button>
+                <iframe width="100%" height="200" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="border-radius:10px;"></iframe>
+            </div>
+        `;
+    }).reverse().join('');
+});
 // ==========================================
 // 3. CÁC HÀM GỬI DỮ LIỆU (TỪ ĐIỆN THOẠI)
 // ==========================================
@@ -100,7 +120,22 @@ function addJersey() {
     };
     r.readAsDataURL(file);
 }
-
+// Hàm lưu Video (Dán dưới addJersey)
+function addVideoLink() {
+    const input = document.getElementById('inputVideoLink');
+    const link = input.value.trim();
+    if (!link) return alert("Hãy dán link Youtube vào!");
+    
+    database.ref('videos').push({ 
+        url: link,
+        timestamp: Date.now() 
+    })
+    .then(() => {
+        alert("Đã thêm Video thành công!");
+        document.getElementById('modalVideoLink').style.display = 'none';
+        input.value = ""; // Xóa trống ô nhập
+    }).catch(err => alert("Lỗi: " + err.message));
+}
 // ==========================================
 // 4. HÀM GIAO DIỆN (MỞ/ĐÓNG)
 // ==========================================
@@ -128,4 +163,9 @@ function deleteData(path) {
 // Đóng modal
 if(document.getElementById('btnCloseModal')){
     document.getElementById('btnCloseModal').onclick = () => document.getElementById('modalCreateAlbum').style.display='none';
+}
+// Hàm mở bảng thêm Video
+function openVideoModal() {
+    const modal = document.getElementById('modalVideoLink');
+    if (modal) modal.style.display = 'block';
 }
