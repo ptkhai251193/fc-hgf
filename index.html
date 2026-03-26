@@ -122,10 +122,13 @@
         <div class="modal-content" style="background: #222; width: 90%; max-width: 400px; margin: 50px auto; padding: 20px; border-radius: 10px; color: white;">
             <span onclick="document.getElementById('modalCreateAlbum').style.display='none'" style="float:right; cursor:pointer;">&times;</span>
             <h3>Thêm Album Mới</h3>
-            <input type="text" id="inputTitle" placeholder="Tiêu đề" style="width: 100%; margin: 10px 0; padding: 8px;">
-            <input type="date" id="inputDate" style="width: 100%; margin: 10px 0; padding: 8px;">
-            <input type="file" id="inputImage" accept="image/*" style="width: 100%; margin: 10px 0;">
-            <button onclick="addAlbum()" style="width: 100%; padding: 10px; background: #0ae307; border: none; color: white; border-radius: 5px;">Lưu Album</button>
+<input type="text" id="inputTitle" placeholder="Tiêu đề" style="width: 100%; margin: 10px 0; padding: 8px;">
+<input type="date" id="inputDate" style="width: 100%; margin: 10px 0; padding: 8px;">
+
+<input type="file" id="inputImage" accept="image/*" multiple style="width: 100%; margin: 10px 0; color: white;">
+<p style="color: #aaa; font-size: 11px; margin-top: -5px;">* Mẹo: Giữ phím Ctrl (máy tính) hoặc nhấn giữ ảnh (điện thoại) để chọn nhiều tấm.</p>
+
+<button onclick="addAlbum()" style="width: 100%; padding: 10px; background: #0ae307; border: none; color: white; border-radius: 5px; font-weight: bold; cursor: pointer;">LƯU ALBUM</button>
         </div>
     </div>
 
@@ -141,6 +144,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
     <script src="script-ui.js"></script>
+<div id="album-detail-page" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; overflow-y: auto; padding: 20px;">
+        </div>
 
+    <div id="photoViewer" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column;" onclick="this.style.display='none'">
+        <img id="fullPhoto" src="" style="max-width: 95%; max-height: 85%; border: 2px solid white; border-radius: 5px;">
+        <p style="color: white; margin-top: 15px;">Bấm vào bất kỳ đâu để đóng</p>
+    </div>
 </body>
 </html>
