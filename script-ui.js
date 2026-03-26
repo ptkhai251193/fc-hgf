@@ -191,3 +191,48 @@ database.ref('jerseys').on('value', (snapshot) => {
         </div>
     `).join('');
 });
+// --- HÀM XỬ LÝ ÁO ĐẤU ---
+function addJersey() {
+    const imgInput = document.getElementById('jerseyImgInput'); // Bạn cần thêm input này vào modal tương ứng
+    if (imgInput.files && imgInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            database.ref('jerseys').push({ img: e.target.result })
+            .then(() => alert("Đã thêm áo đấu!"));
+        };
+        reader.readAsDataURL(imgInput.files[0]);
+    }
+}
+
+// --- HÀM XỬ LÝ ALBUM ---
+// Sửa lại hàm addAlbum để khớp với ID trong file HTML của bạn
+function addAlbum() {
+    const title = document.getElementById('inputTitle').value;
+    const imgInput = document.getElementById('inputImage');
+    if (imgInput.files && imgInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            database.ref('albums').push({
+                title: title,
+                img: e.target.result,
+                date: new Date().toLocaleDateString()
+            }).then(() => {
+                alert("Đã thêm Album!");
+                document.getElementById('modalCreateAlbum').style.display = 'none';
+            });
+        };
+        reader.readAsDataURL(imgInput.files[0]);
+    }
+}
+
+// --- HÀM XỬ LÝ VIDEO ---
+function addVideoLink() {
+    const link = document.getElementById('inputVideoLink').value;
+    if (link) {
+        database.ref('videos').push({ url: link })
+        .then(() => {
+            alert("Đã thêm Video!");
+            document.getElementById('modalVideoLink').style.display = 'none';
+        });
+    }
+}
