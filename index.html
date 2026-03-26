@@ -47,7 +47,14 @@
     </style>
 </head>
 <body>
-
+    <div id="sidebar" style="display: none; position: fixed; top: 0; left: 0; width: 250px; height: 100%; background: #222; z-index: 5000; padding: 20px; border-right: 2px solid #FFD700;">
+    <h3 style="color: #FFD700;">DANH MỤC</h3>
+    <ul style="list-style: none; padding: 0;">
+        <li style="margin: 20px 0;"><a href="#" onclick="goBackHome()" style="color: white; text-decoration: none;">🏠 Trang chủ</a></li>
+        <li style="margin: 20px 0;"><a href="#" onclick="showTab('thanh-vien')" style="color: white; text-decoration: none;">👥 Thành viên</a></li>
+    </ul>
+    <button onclick="toggleMenu()" style="background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Đóng</button>
+</div>
     <div id="thanh-vien-page" class="sub-page" style="display: none;">
         <div class="container">
             <div class="section-header">

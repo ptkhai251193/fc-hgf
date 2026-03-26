@@ -251,6 +251,42 @@ function addVideoLink() {
         alert("Lỗi khi lưu: " + error.message);
     });
 }
+// Hàm đóng/mở Menu bên trái
+function toggleMenu() {
+    const sidebar = document.getElementById('sidebar'); // Đảm bảo ID này khớp với CSS/HTML của bạn
+    if (sidebar) {
+        if (sidebar.style.display === 'none' || sidebar.style.display === '') {
+            sidebar.style.display = 'block';
+        } else {
+            sidebar.style.display = 'none';
+        }
+    } else {
+        // Nếu bạn dùng Menu dạng danh sách xổ xuống đơn giản
+        alert("Menu đang được bảo trì hoặc thiếu ID sidebar!");
+    }
+}
+
+// Hàm quay lại trang chủ (Dùng để thoát khỏi chế độ xem Album chi tiết)
+function goBackHome() {
+    // Hiện lại trang chủ
+    const mainContent = document.getElementById('main-content');
+    const topBanner = document.querySelector('.top-banner');
+    const mainHeading = document.querySelector('.main-heading');
+    
+    if (mainContent) mainContent.style.display = 'block';
+    if (topBanner) topBanner.style.display = 'block';
+    if (mainHeading) mainHeading.style.display = 'block';
+
+    // Ẩn trang chi tiết Album và trang Thành viên
+    const detailPage = document.getElementById('album-detail-page');
+    const memberPage = document.getElementById('thanh-vien-page');
+    
+    if (detailPage) detailPage.style.display = 'none';
+    if (memberPage) memberPage.style.display = 'none';
+    
+    // Cuộn lên đầu trang
+    window.scrollTo(0, 0);
+}
 // ==========================================
 // 5. HÀM XỬ LÝ XEM CHI TIẾT ALBUM (MỚI THÊM)
 // ==========================================
