@@ -158,3 +158,23 @@ function deleteMember(id) {
     const pass = prompt("Mật khẩu xóa:");
     if (pass === "HGF2026") database.ref('members/' + id).remove();
 }
+// Hàm mở Modal Album
+function openAlbumModal() {
+    document.getElementById('modalCreateAlbum').style.display = 'block';
+}
+
+// Hàm đóng Modal Album (nếu cần nút X hoạt động)
+document.getElementById('btnCloseModal').onclick = function() {
+    document.getElementById('modalCreateAlbum').style.display = 'none';
+};
+
+// Hàm mở khu vực tải Áo Đấu
+function openJerseyUpload() {
+    const area = document.getElementById('jerseyUploadArea');
+    area.style.display = (area.style.display === 'none') ? 'block' : 'none';
+}
+
+// Hàm mở Modal Video
+function openVideoModal() {
+    document.getElementById('modalVideoLink').style.display = 'block';
+}
