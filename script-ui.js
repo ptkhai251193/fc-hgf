@@ -119,15 +119,19 @@ function addMember() {
 }
 // Hàm nén ảnh giúp web load nhanh hơn gấp 10 lần
 function compressImage(file) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
+        reader.onerror = error => reject(error); // Xử lý lỗi đọc file
         reader.onload = (event) => {
             const img = new Image();
             img.src = event.target.result;
+            
+            img.onerror = error => reject(error); // Xử lý lỗi tải ảnh
+
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 1000; // Giới hạn chiều rộng ảnh
+                const MAX_WIDTH = 1200; // Giới hạn chiều rộng ảnh (khoảng 1080px - 1200px là đẹp)
                 let width = img.width;
                 let height = img.height;
 
@@ -139,8 +143,10 @@ function compressImage(file) {
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                // Nén chất lượng còn 0.7 (70%)
-                resolve(canvas.toDataURL('image/jpeg', 0.7));
+
+                // Nén chất lượng còn 0.7 (70% - mức nén vàng)
+                // Phải đổi sang image/jpeg để nén tốt nhất
+                resolve(canvas.toDataURL('image/jpeg', 0.7)); 
             };
         };
     });
@@ -168,7 +174,7 @@ async function addAlbum() {
    try {
     const photoPromises = [];
     for (let i = 0; i < files.length; i++) {
-        // Gọi hàm nén thay vì đọc file trực tiếp
+        // Thay vì fileToDataURL cũ, hãy gọi hàm nén
         photoPromises.push(compressImage(files[i]));
     }
     const allPhotos = await Promise.all(photoPromises);
