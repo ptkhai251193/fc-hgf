@@ -34,7 +34,7 @@ database.ref('members').on('value', (s) => {
 // --- THAY THẾ ĐOẠN LẮNG NGHE ALBUM CŨ (PHẦN 2) ---
 database.ref('albums').on('value', (snapshot) => {
     const data = snapshot.val();
-    const container = document.getElementById('album-list');
+    const container = document.getElementById('albumContainer');
     if (!container) return;
 
     if (!data) {
@@ -397,24 +397,4 @@ function openAlbumDetail(albumId) {
             </div>
         `;
     });
-}
-// ==========================================
-// 6. XỬ LÝ PHÓNG TO ẢNH (LIGHTBOX)
-// ==========================================
-
-function openLightbox(photoUrl) {
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    
-    if (lightbox && lightboxImg) {
-        lightboxImg.src = photoUrl; // Đưa ảnh vào khung
-        lightbox.style.display = 'block'; // Hiện khung
-    }
-}
-
-function closeLightbox() {
-    const lightbox = document.getElementById('lightbox');
-    if (lightbox) {
-        lightbox.style.display = 'none'; // Ẩn khung
-    }
 }
