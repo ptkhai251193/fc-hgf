@@ -302,31 +302,29 @@ function openJerseyModal() {
     document.getElementById('modalJersey').style.display = 'block';
 }
 
-// Hàm xử lý lưu Áo đấu
+// Hàm xử lý lưu Áo đấu lên Firebase để đồng bộ các máy
 function handleJerseyUpload() {
     const fileInput = document.getElementById('inputJerseyFile');
     const file = fileInput.files[0];
 
     if (!file) {
-        alert("Anh Manager ơi, vui lòng chọn một tấm ảnh áo đấu đã nhé!");
+        alert("Vui lòng chọn ảnh!");
         return;
     }
 
     const reader = new FileReader();
     reader.onload = function(event) {
         const jerseyData = event.target.result;
-        let jerseys = JSON.parse(localStorage.getItem('myJerseys')) || [];
-        jerseys.push(jerseyData);
-        localStorage.setItem('myJerseys', JSON.stringify(jerseys));
-        
-        if (typeof loadJerseys === "function") {
-            loadJerseys(); // Cập nhật lại danh sách áo ngoài màn hình
-        }
-        
-        // Dọn dẹp và đóng bảng
-        fileInput.value = ""; 
-        document.getElementById('modalJersey').style.display = 'none';
-        alert("Đã lưu mẫu áo thành công rồi anh nhé!");
+
+        // GỬI LÊN FIREBASE (Thay vì localStorage)
+        database.ref('jerseys').push({
+            image: jerseyData,
+            timestamp: Date.now()
+        }).then(() => {
+            alert("Đã đồng bộ mẫu áo lên hệ thống!");
+            document.getElementById('modalJersey').style.display = 'none';
+            fileInput.value = "";
+        });
     };
     reader.readAsDataURL(file);
 }

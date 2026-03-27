@@ -53,20 +53,44 @@ database.ref('albums').on('value', (snapshot) => {
     `).reverse().join('');
 });
 
-// Lắng nghe Áo Đấu
-database.ref('jerseys').on('value', (s) => {
-    const data = s.val();
+// Lắng nghe dữ liệu áo đấu từ Firebase
+database.ref('jerseys').on('value', (snapshot) => {
+    const data = snapshot.val();
     const container = document.getElementById('jerseyContainer');
     if (!container) return;
-    if (!data) { container.innerHTML = "<p style='color:white;'>Trống.</p>"; return; }
-    const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
-    container.innerHTML = list.map(item => `
-        <div style="display:inline-block; margin:10px; position:relative;">
-            <span onclick="deleteData('jerseys/${item.id}')" style="position:absolute; top:5px; right:10px; color:red; font-size:22px; cursor:pointer;">&times;</span>
-            <img src="${item.img}" style="width:160px; border:3px solid #6CABDD; border-radius:12px; background:white; padding:5px;">
-        </div>
-    `).reverse().join('');
+    
+    container.innerHTML = ''; // Xóa cũ hiện mới
+
+    if (data) {
+        Object.keys(data).forEach(key => {
+            const jersey = data[key];
+            const div = document.createElement('div');
+            div.className = 'album-card'; // Dùng lại class cho đẹp
+            div.style.background = 'white';
+            div.style.border = '2px solid #ddd';
+            
+            div.innerHTML = `
+                <img src="${jersey.image}" style="width: 100%; height: 200px; object-fit: contain; padding: 10px;">
+                <div style="text-align:center; padding-bottom: 10px;">
+                    <button onclick="deleteJersey('${key}')" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:12px;">Xóa</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
 });
+
+// Hàm xóa áo trên toàn hệ thống
+function deleteJersey(id) {
+    if (confirm("Xóa mẫu áo này trên tất cả thiết bị?")) {
+        const pass = prompt("Nhập mật khẩu (HGF2026):");
+        if (pass === "HGF2026") {
+            database.ref('jerseys/' + id).remove();
+        } else {
+            alert("Sai mật khẩu!");
+        }
+    }
+}
 
 // Lắng nghe Video
 database.ref('videos').on('value', (s) => {
