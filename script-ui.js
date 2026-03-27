@@ -31,41 +31,38 @@ database.ref('members').on('value', (s) => {
     `).join('');
 });
 
-// --- THAY THẾ ĐOẠN LẮNG NGHE ALBUM CŨ (PHẦN 2) ---
 database.ref('albums').on('value', (snapshot) => {
     const data = snapshot.val();
-    const container = document.getElementById('albumContainer');
+    const container = document.getElementById('album-list');
+    
     if (!container) return;
 
     if (!data) {
-        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có album kỷ niệm nào.</p>";
+        container.innerHTML = "<p style='color:gray; text-align:center; width:100%;'>Chưa có album nào.</p>";
         return;
     }
 
     const list = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-    
-    // Vẽ giao diện Album (Có nút xóa và khu vực bấm để mở chi tiết)
-    container.innerHTML = list.map(a => `
-    <div class="album-card" onclick="openAlbumDetail('${a.id}')" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 15px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-radius: 15px; margin: 10px; width: 280px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-        
-        <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:10px; right:12px; color:#999; font-size:22px; cursor:pointer;">&times;</span>
-        
-        <img src="${a.cover || a.img}" style="width:100%; height:180px; object-fit:cover; border-radius: 10px; margin-bottom: 12px;">
-        
-        <h4 style="color: #D4A017; margin: 0 0 8px 0; font-size: 19px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-            ${a.title}
-        </h4>
-        
-        <div style="color: #555; font-size: 14px; margin-bottom: 6px; width: 100%;">
-            <span style="color: #6a5acd;">👤</span> Người đăng: <strong>${a.author || 'Không rõ'}</strong>
-        </div>
-        
-        <div style="color: #777; font-size: 13px; width: 100%;">
-            <span style="color: #ff69b4;">📅</span> Ngày: ${a.date}
-        </div>
 
-    </div>
-`).reverse().join('');
+    container.innerHTML = list.map(a => `
+        <div class="album-card" onclick="openAlbumDetail('${a.id}')" style="position: relative; text-align: center;">
+            
+            <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:10px; right:12px; color:#999; font-size:22px; cursor:pointer;">&times;</span>
+            
+            <img src="${a.cover || a.img}" style="width:100%; height:180px; object-fit:cover; border-radius: 12px; margin-bottom: 12px;">
+            
+            <h4 style="color: #D4A017; margin: 0 0 8px 0; font-size: 19px; font-weight: bold; width: 100%;">${a.title}</h4>
+            
+            <div style="color: #333; font-size: 14px; margin-bottom: 5px; width: 100%;">
+                👤 Người đăng: <strong>${a.author || 'Admin'}</strong>
+            </div>
+            
+            <div style="color: #666; font-size: 13px; width: 100%;">
+                📅 Ngày: ${a.date}
+            </div>
+        </div>
+    `).reverse().join('');
+});
 });
 
 // Lắng nghe Áo Đấu
