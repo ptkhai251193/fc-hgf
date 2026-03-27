@@ -8,12 +8,47 @@ const firebaseConfig = {
     messagingSenderId: "1057951855896",
     appId: "1:1057951855896:web:6a50e64266f8ebaf339a6d"
 };
-firebase.initializeApp(firebaseConfig);
+
+// Khởi tạo nếu chưa có
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const database = firebase.database();
 
 // ==========================================
-// 2. CÁC HÀM LẮNG NGHE (READ DATA)
+// 2. CÁC HÀM LẮNG NGHE (READ DATA) - ĐỒNG BỘ MỌI THIẾT BỊ
 // ==========================================
+
+// Lắng nghe Áo đấu (Sửa lỗi khớp tên biến 'image')
+database.ref('jerseys').on('value', (snapshot) => {
+    const data = snapshot.val();
+    const container = document.getElementById('jerseyContainer');
+    if (!container) return;
+    
+    container.innerHTML = ''; 
+
+    if (data) {
+        Object.keys(data).forEach(key => {
+            const jersey = data[key];
+            const div = document.createElement('div');
+            div.className = 'album-card'; 
+            div.style.background = 'white';
+            div.style.border = '2px solid #ddd';
+            div.style.margin = '10px';
+            div.style.display = 'inline-block';
+            div.style.width = '200px';
+            
+            // Dùng jersey.image (khớp với hàm push bên dưới)
+            div.innerHTML = `
+                <img src="${jersey.image}" style="width: 100%; height: 200px; object-fit: contain; padding: 10px;">
+                <div style="text-align:center; padding-bottom: 10px;">
+                    <button onclick="deleteData('jerseys/${key}')" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:12px;">Xóa</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+});
 
 // Lắng nghe Thành Viên
 database.ref('members').on('value', (s) => {
@@ -23,10 +58,11 @@ database.ref('members').on('value', (s) => {
     if (!data) { grid.innerHTML = "<p style='color:yellow;'>Trống.</p>"; return; }
     const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
     grid.innerHTML = list.map(m => `
-        <div class="member-card" style="position:relative;">
-            <button onclick="deleteData('members/${m.id}')" style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;border-radius:50%;cursor:pointer;">×</button>
-            <img src="${m.img}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
-            <h3>${m.name}</h3><p>Số: ${m.number}</p>
+        <div class="member-card" style="position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center;">
+            <button onclick="deleteData('members/${m.id}')" style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;border-radius:50%;cursor:pointer;width:25px;height:25px;">×</button>
+            <img src="${m.img}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;">
+            <h3 style="color:white; margin:10px 0 5px 0;">${m.name}</h3>
+            <p style="color:#FFD700; font-weight:bold;">Số áo: ${m.number}</p>
         </div>
     `).join('');
 });
@@ -35,74 +71,37 @@ database.ref('members').on('value', (s) => {
 database.ref('albums').on('value', (snapshot) => {
     const data = snapshot.val();
     const container = document.getElementById('albumContainer');
-    if (!container || !data) {
-        if (container) container.innerHTML = "<p style='color:white;'>Chưa có album nào.</p>";
-        return;
-    }
+    if (!container) return;
+    if (!data) { container.innerHTML = "<p style='color:white;'>Chưa có album nào.</p>"; return; }
+    
     const list = Object.keys(data).map(key => ({ id: key, ...data[key] }));
     container.innerHTML = list.map(a => `
-        <div class="album-card" style="margin:10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; display:inline-block; width:250px; position:relative; cursor:pointer;">
-            <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:5px; right:10px; color:white; font-size:22px; cursor:pointer;">&times;</span>
+        <div class="album-card" style="margin:10px; background:white; padding:0; border-radius:15px; display:inline-block; width:250px; position:relative; cursor:pointer; border:2px solid #ddd; overflow:hidden;">
+            <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:5px; right:10px; color:red; font-size:25px; cursor:pointer; z-index:10;">&times;</span>
             <div onclick="openAlbumDetail('${a.id}')">
-                <img src="${a.cover || a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover;">
-                <h4 style="color:#ffcc00; margin:5px 0; text-align:center;">${a.title}</h4>
-                <p style="color:#fff; font-size:11px; text-align:center; margin:0;">👤 ${a.author || 'Ẩn danh'}</p>
-                <p style="color:#ccc; font-size:11px; text-align:center; margin:0;">📅 ${a.date}</p>
+                <img src="${a.cover || a.photos[0]}" style="width:100%; height:160px; object-fit:cover;">
+                <div style="padding:10px;">
+                    <h4 style="color:#333; margin:5px 0; text-align:center;">${a.title}</h4>
+                    <p style="color:#666; font-size:11px; text-align:center; margin:0;">👤 ${a.author || 'Quản trị'}</p>
+                    <p style="color:#888; font-size:11px; text-align:center; margin:0;">📅 ${a.date}</p>
+                </div>
             </div>
         </div>
     `).reverse().join('');
 });
 
-// Lắng nghe dữ liệu áo đấu từ Firebase
-database.ref('jerseys').on('value', (snapshot) => {
-    const data = snapshot.val();
-    const container = document.getElementById('jerseyContainer');
-    if (!container) return;
-    
-    container.innerHTML = ''; // Xóa cũ hiện mới
-
-    if (data) {
-        Object.keys(data).forEach(key => {
-            const jersey = data[key];
-            const div = document.createElement('div');
-            div.className = 'album-card'; // Dùng lại class cho đẹp
-            div.style.background = 'white';
-            div.style.border = '2px solid #ddd';
-            
-            div.innerHTML = `
-                <img src="${jersey.image}" style="width: 100%; height: 200px; object-fit: contain; padding: 10px;">
-                <div style="text-align:center; padding-bottom: 10px;">
-                    <button onclick="deleteJersey('${key}')" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:12px;">Xóa</button>
-                </div>
-            `;
-            container.appendChild(div);
-        });
-    }
-});
-
-// Hàm xóa áo trên toàn hệ thống
-function deleteJersey(id) {
-    if (confirm("Xóa mẫu áo này trên tất cả thiết bị?")) {
-        const pass = prompt("Nhập mật khẩu (HGF2026):");
-        if (pass === "HGF2026") {
-            database.ref('jerseys/' + id).remove();
-        } else {
-            alert("Sai mật khẩu!");
-        }
-    }
-}
-
 // Lắng nghe Video
 database.ref('videos').on('value', (s) => {
     const data = s.val();
     const container = document.getElementById('videoContainer');
-    if (!container || !data) return;
+    if (!container) return;
+    if (!data) { container.innerHTML = ""; return; }
     const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
     container.innerHTML = list.map(v => {
         let videoId = v.url.includes('v=') ? v.url.split('v=')[1].split('&')[0] : v.url.split('/').pop();
         return `
-            <div style="margin-bottom:20px; position:relative; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px;">
-                <span onclick="deleteData('videos/${v.id}')" style="position:absolute; top:5px; right:15px; color:white; font-size:25px; cursor:pointer;">&times;</span>
+            <div style="margin-bottom:20px; position:relative; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; width:100%; max-width:400px; display:inline-block; margin:10px;">
+                <span onclick="deleteData('videos/${v.id}')" style="position:absolute; top:5px; right:15px; color:white; font-size:30px; cursor:pointer; z-index:10;">&times;</span>
                 <iframe width="100%" height="210" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="border-radius:8px;"></iframe>
             </div>
         `;
@@ -113,6 +112,34 @@ database.ref('videos').on('value', (s) => {
 // 3. CÁC HÀM GỬI DỮ LIỆU (WRITE DATA)
 // ==========================================
 
+// Sửa hàm Thêm Áo (Khớp biến image)
+function addJersey() {
+    const fileInput = document.getElementById('jerseyImgInput');
+    const file = fileInput.files[0];
+    if (!file) return alert("Hãy chọn ảnh!");
+    
+    const btn = document.querySelector("#jerseyUploadArea button");
+    btn.innerText = "⏳ Đang tải...";
+    btn.disabled = true;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        database.ref('jerseys').push({ 
+            image: e.target.result, // Lưu là 'image' cho khớp hàm load
+            timestamp: Date.now() 
+        })
+        .then(() => { 
+            alert("Đã đồng bộ mẫu áo!"); 
+            btn.innerText = "Xác nhận";
+            btn.disabled = false;
+            fileInput.value = "";
+            openJerseyUpload(); // Đóng khung nhập
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+// Các hàm khác giữ nguyên nhưng tối ưu logic
 function addMember() {
     const name = document.getElementById('memName').value;
     const number = document.getElementById('memNumber').value;
@@ -127,20 +154,15 @@ function addMember() {
 }
 
 async function addAlbum() {
-    const titleInput = document.getElementById('inputTitle');
-    const authorInput = document.getElementById('inputAuthor');
-    const dateInput = document.getElementById('inputDate');
-    const fileInput = document.getElementById('inputImage');
-
-    const title = titleInput.value.trim();
-    const author = authorInput ? authorInput.value.trim() : "Ẩn danh";
-    const date = dateInput.value;
-    const files = fileInput.files;
+    const title = document.getElementById('inputTitle').value.trim();
+    const author = document.getElementById('inputAuthor').value.trim() || "Quản trị";
+    const date = document.getElementById('inputDate').value;
+    const files = document.getElementById('inputImage').files;
 
     if (!title || !date || files.length === 0) return alert("Vui lòng nhập đủ thông tin!");
 
     const btn = document.querySelector("#modalCreateAlbum .btn-submit");
-    if(btn) { btn.disabled = true; btn.innerText = "⏳ Đang tải..."; }
+    btn.disabled = true; btn.innerText = "⏳ Đang đồng bộ...";
 
     try {
         const photoPromises = Array.from(files).map(file => {
@@ -158,44 +180,28 @@ async function addAlbum() {
             photos: allPhotos,
             timestamp: Date.now()
         });
-        alert("✅ Đã đăng album!");
+        alert("✅ Đã đăng album lên hệ thống!");
         closeAlbumModal();
     } catch (error) { alert("Lỗi: " + error.message); }
-    finally { if(btn) { btn.disabled = false; btn.innerText = "ĐĂNG ALBUM"; } }
-}
-
-function addJersey() {
-    const fileInput = document.getElementById('jerseyImgInput');
-    const file = fileInput.files[0];
-    if (!file) return alert("Hãy chọn ảnh!");
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        database.ref('jerseys').push({ img: e.target.result, timestamp: Date.now() })
-        .then(() => { alert("Đã thêm áo!"); openJerseyUpload(); });
-    };
-    reader.readAsDataURL(file);
+    finally { btn.disabled = false; btn.innerText = "ĐĂNG ALBUM"; }
 }
 
 function addVideo() {
-    const urlInput = document.getElementById('videoUrl');
-    const url = urlInput ? urlInput.value.trim() : "";
+    const url = document.getElementById('videoUrl').value.trim();
     if (!url) return alert("Dán link YouTube vào!");
     database.ref('videos').push({ url, timestamp: Date.now() })
-    .then(() => { alert("✅ Đã thêm video!"); closeVideoModal(); });
+    .then(() => { alert("✅ Đã thêm video!"); closeVideoModal(); document.getElementById('videoUrl').value = ""; });
 }
 
-// ==========================================
-// 4. ĐIỀU KHIỂN GIAO DIỆN (UI CONTROL)
-// ==========================================
-
 function deleteData(path) {
-    if (prompt("Nhập mật khẩu quản trị:") === "HGF2026") {
-        if (confirm("Xóa vĩnh viễn dữ liệu này?")) {
-            database.ref(path).remove().then(() => alert("Đã xóa!"));
+    if (prompt("Nhập mật khẩu quản trị để xóa:") === "HGF2026") {
+        if (confirm("Xóa vĩnh viễn dữ liệu này trên mọi thiết bị?")) {
+            database.ref(path).remove().then(() => alert("Đã xóa xong!"));
         }
     } else { alert("Sai mật khẩu!"); }
 }
 
+// Các hàm đóng mở Modal giữ nguyên như code cũ của anh
 function openAlbumDetail(albumId) {
     const modal = document.getElementById('modalAlbumDetail');
     const grid = document.getElementById('photoGrid');
@@ -203,9 +209,10 @@ function openAlbumDetail(albumId) {
         const album = snapshot.val();
         if (!album) return;
         document.getElementById('detailTitle').innerText = album.title;
+        document.getElementById('detailInfo').innerText = `Người đăng: ${album.author} | Ngày: ${album.date}`;
         modal.style.display = 'block';
         grid.innerHTML = album.photos.map(src => `
-            <img src="${src}" onclick="viewPhoto('${src}')" style="width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer;">
+            <img src="${src}" onclick="viewPhoto('${src}')" style="width:100%; height:150px; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid #eee;">
         `).join('');
     });
 }
@@ -218,7 +225,7 @@ function viewPhoto(src) {
 
 function toggleAddMemberForm() {
     const f = document.getElementById('addMemberForm');
-    if(f) f.style.display = (f.style.display === 'none') ? 'block' : 'none';
+    f.style.display = (f.style.display === 'none') ? 'block' : 'none';
 }
 
 function openAlbumModal() { document.getElementById('modalCreateAlbum').style.display = 'block'; }
