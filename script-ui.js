@@ -365,23 +365,56 @@ function openAlbumDetail(albumId) {
 
         // 4. Vẽ giao diện chi tiết Album (Tiêu đề, nút quay lại và Grid ảnh)
         detailArea.innerHTML = `
-            <div class="container" style="max-width: 1200px; margin: 0 auto; color: white;">
-                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #FFD700; padding-bottom: 15px;">
-                    <button class="add-btn" onclick="goBackHome()" style="background: #555; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">← Quay lại trang chủ</button>
+            <div class="container" style="max-width: 1200px; margin: 0 auto; color: #333; padding: 20px; min-height: 100vh; background: white;">
+                
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #EEE; padding-bottom: 20px;">
+                    <button class="add-btn" onclick="goBackHome()" style="background: #f5f5f5; color: #333; border: 1px solid #ddd; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s;">
+                        ← Quay lại trang chủ
+                    </button>
+                    
                     <div style="text-align: right;">
-                        <h2 class="title-member" style="margin: 0; font-size: 32px; color: #FFD700;">${album.title}</h2>
-                        <p style="color: #ccc; margin: 0; font-size: 15px;">Ngày: ${album.date} | Tổng số: ${photos.length} ảnh</p>
+                        <h2 class="title-member" style="margin: 0; font-size: 36px; color: #D4A017; text-transform: uppercase; font-weight: bold;">
+                            ${album.title}
+                        </h2>
+                        <p style="color: #666; margin: 5px 0 0 0; font-size: 15px; font-weight: 500;">
+                            📅 Ngày: ${album.date} | 🖼️ Tổng số: ${photos.length} ảnh | 👤 Đăng bởi: ${album.author || 'Admin'}
+                        </p>
                     </div>
                 </div>
 
-                <div class="photo-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding-bottom: 50px;">
+                <div class="photo-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 50px;">
                     ${photos.map(photoUrl => `
-                        <div class="photo-item" style="border: 3px solid #333; border-radius: 10px; overflow: hidden; background: #000; transition: transform 0.2s;">
-                            <img src="${photoUrl}" style="width: 100%; height: 200px; object-fit: cover; cursor: pointer;" onclick="viewFullPhoto('${photoUrl}')">
+                        <div class="photo-item" style="border-radius: 15px; overflow: hidden; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.2s; cursor: pointer;" onclick="openLightbox('${photoUrl}')">
+                            <img src="${photoUrl}" style="width: 100%; height: 250px; object-fit: cover; display: block; border-bottom: 1px solid #eee;">
                         </div>
                     `).join('')}
                 </div>
             </div>
+
+            <div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; text-align: center; cursor: pointer;" onclick="closeLightbox()">
+                <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 50px; font-weight: bold; cursor: pointer;">&times;</span>
+                <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; margin-top: 5vh; border: 5px solid white; border-radius: 10px; box-shadow: 0 0 30px rgba(255,255,255,0.3);">
+            </div>
         `;
     });
+}
+// ==========================================
+// 6. XỬ LÝ PHÓNG TO ẢNH (LIGHTBOX)
+// ==========================================
+
+function openLightbox(photoUrl) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    
+    if (lightbox && lightboxImg) {
+        lightboxImg.src = photoUrl; // Đưa ảnh vào khung
+        lightbox.style.display = 'block'; // Hiện khung
+    }
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox) {
+        lightbox.style.display = 'none'; // Ẩn khung
+    }
 }
