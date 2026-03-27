@@ -252,3 +252,46 @@ function addVideo() {
         document.getElementById('videoUrl').value = "";
     });
 }
+// Hàm mở bảng nhập link Video
+function openVideoModal() {
+    const modal = document.getElementById('modalVideoLink');
+    if (modal) {
+        modal.style.display = 'block';
+    } else {
+        console.error("Lỗi: Không tìm thấy Modal có ID 'modalVideoLink'");
+    }
+}
+
+// Hàm đóng bảng nhập link Video
+function closeVideoModal() {
+    const modal = document.getElementById('modalVideoLink');
+    if (modal) {
+        modal.style.display = 'none';
+        // Xóa trắng ô nhập sau khi đóng
+        const input = document.getElementById('videoUrl');
+        if(input) input.value = "";
+    }
+}
+
+// Hàm gửi Video lên Firebase (Bổ sung để nút "Đăng" hoạt động)
+function addVideo() {
+    const urlInput = document.getElementById('videoUrl');
+    if (!urlInput || !urlInput.value.trim()) {
+        return alert("Vui lòng dán link YouTube vào!");
+    }
+
+    const url = urlInput.value.trim();
+    
+    // Đẩy dữ liệu lên Firebase
+    database.ref('videos').push({
+        url: url,
+        timestamp: Date.now()
+    })
+    .then(() => {
+        alert("✅ Đã thêm video thành công!");
+        closeVideoModal();
+    })
+    .catch((error) => {
+        alert("❌ Lỗi: " + error.message);
+    });
+}
