@@ -31,12 +31,12 @@ database.ref('members').on('value', (s) => {
     `).join('');
 });
 
+// --- KHÔI PHỤC HIỂN THỊ ALBUM (Cấu trúc chuẩn, không lỗi ngoặc) ---
 database.ref('albums').on('value', (snapshot) => {
     const data = snapshot.val();
     const container = document.getElementById('album-list');
     
-    if (!container) return;
-
+    if (!container) return; 
 
     if (!data) {
         container.innerHTML = "<p style='color:gray; text-align:center; width:100%;'>Chưa có album nào.</p>";
@@ -46,25 +46,19 @@ database.ref('albums').on('value', (snapshot) => {
     const list = Object.keys(data).map(key => ({ id: key, ...data[key] }));
 
     container.innerHTML = list.map(a => `
-        <div class="album-card" onclick="openAlbumDetail('${a.id}')" style="position: relative; text-align: center;">
-            
+        <div class="album-card" onclick="openAlbumDetail('${a.id}')" style="position: relative; text-align: center; background: white; border-radius: 15px; padding: 15px; display: inline-block; width: 280px; margin: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
             <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:10px; right:12px; color:#999; font-size:22px; cursor:pointer;">&times;</span>
-            
             <img src="${a.cover || a.img}" style="width:100%; height:180px; object-fit:cover; border-radius: 12px; margin-bottom: 12px;">
-            
-            <h4 style="color: #D4A017; margin: 0 0 8px 0; font-size: 19px; font-weight: bold; width: 100%;">${a.title}</h4>
-            
-            <div style="color: #333; font-size: 14px; margin-bottom: 5px; width: 100%;">
+            <h4 style="color: #D4A017; margin: 0 0 8px 0; font-size: 19px; font-weight: bold;">${a.title}</h4>
+            <div style="color: #333; font-size: 14px; margin-bottom: 5px;">
                 👤 Người đăng: <strong>${a.author || 'Admin'}</strong>
             </div>
-            
-            <div style="color: #666; font-size: 13px; width: 100%;">
+            <div style="color: #666; font-size: 13px;">
                 📅 Ngày: ${a.date}
             </div>
         </div>
     `).reverse().join('');
-});
-});
+}); // <--- Đảm bảo có dấu đóng ngoặc đơn và chấm phẩy ở đây
 
 // Lắng nghe Áo Đấu
 database.ref('jerseys').on('value', (s) => {
