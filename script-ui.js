@@ -31,38 +31,22 @@ database.ref('members').on('value', (s) => {
     `).join('');
 });
 
-database.ref('albums').on('value', (snapshot) => {
-    const data = snapshot.val();
-    const container = document.getElementById('album-list');
-    
+database.ref('albums').on('value', (s) => {
+    const data = s.val();
+    const container = document.getElementById('albumContainer');
     if (!container) return;
-
-    if (!data) {
-        container.innerHTML = "<p style='color:gray; text-align:center; width:100%;'>Chưa có album nào.</p>";
-        return;
-    }
-
-    const list = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-
+    if (!data) { container.innerHTML = "<p style='color:white;'>Chưa có album.</p>"; return; }
+    
+    const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
     container.innerHTML = list.map(a => `
-        <div class="album-card" onclick="openAlbumDetail('${a.id}')" style="position: relative; text-align: center;">
+        <div class="album-card" style="margin:10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; display:inline-block; width:250px; position:relative;">
+            <span onclick="deleteData('albums/${a.id}')" style="position:absolute; top:5px; right:10px; color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
             
-            <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:10px; right:12px; color:#999; font-size:22px; cursor:pointer;">&times;</span>
-            
-            <img src="${a.cover || a.img}" style="width:100%; height:180px; object-fit:cover; border-radius: 12px; margin-bottom: 12px;">
-            
-            <h4 style="color: #D4A017; margin: 0 0 8px 0; font-size: 19px; font-weight: bold; width: 100%;">${a.title}</h4>
-            
-            <div style="color: #333; font-size: 14px; margin-bottom: 5px; width: 100%;">
-                👤 Người đăng: <strong>${a.author || 'Admin'}</strong>
-            </div>
-            
-            <div style="color: #666; font-size: 13px; width: 100%;">
-                📅 Ngày: ${a.date}
-            </div>
+            <img src="${a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover;">
+            <h4 style="color:#ffcc00; margin:5px 0;">${a.title}</h4>
+            <p style="color:#ccc; font-size:12px;">${a.date}</p>
         </div>
     `).reverse().join('');
-});
 });
 
 // Lắng nghe Áo Đấu
@@ -116,87 +100,18 @@ function addMember() {
     };
     r.readAsDataURL(file);
 }
-// Hàm nén ảnh giúp web load nhanh hơn gấp 10 lần
-function compressImage(file) {
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 1000; // Giới hạn chiều rộng ảnh
-                let width = img.width;
-                let height = img.height;
 
-                if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                }
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                // Nén chất lượng còn 0.7 (70%)
-                resolve(canvas.toDataURL('image/jpeg', 0.7));
-            };
-        };
-    });
-}
-async function addAlbum() {
-    // 1. Lấy dữ liệu từ các ô nhập
-    const title = document.getElementById('inputTitle').value.trim();
-    const author = document.getElementById('inputAuthor') ? document.getElementById('inputAuthor').value.trim() : ""; // Kiểm tra nếu ô Người đăng tồn tại
+function addAlbum() {
+    const title = document.getElementById('inputTitle').value;
     const date = document.getElementById('inputDate').value;
-    const fileInput = document.getElementById('inputImage');
-    const files = fileInput.files;
-
-    // 2. Kiểm tra điều kiện (Nếu thiếu sẽ báo Alert và dừng lại)
-    if (!title) return alert("Bạn chưa nhập Tiêu đề Album!");
-    if (!author) return alert("Bạn chưa nhập Tên người đăng!");
-    if (!date) return alert("Bạn chưa chọn Ngày tháng!");
-    if (files.length === 0) return alert("Bạn chưa chọn ảnh nào!");
-
-    // 3. Hiển thị trạng thái đang xử lý
-    const btn = document.querySelector("#modalCreateAlbum .btn-submit") || document.querySelector("#modalCreateAlbum button[onclick='addAlbum()']");
-    const originalText = btn.innerText;
-    btn.innerText = `⏳ Đang tải ${files.length} ảnh...`;
-    btn.disabled = true;
-
-   try {
-    const photoPromises = [];
-    for (let i = 0; i < files.length; i++) {
-        // Gọi hàm nén thay vì đọc file trực tiếp
-        photoPromises.push(compressImage(files[i]));
-    }
-    const allPhotos = await Promise.all(photoPromises);
-
-        // 4. Đẩy lên Firebase (Lưu cả mảng ảnh và Người đăng)
-        await database.ref('albums').push({
-            title: title,
-            author: author, // Lưu tên người đăng
-            date: date,
-            cover: allPhotos[0], // Lấy ảnh đầu làm đại diện
-            photos: allPhotos,   // Danh sách tất cả ảnh
-            timestamp: Date.now()
-        });
-
-        alert(`✅ Thành công! Đã tạo Album '${title}' (Đăng bởi: ${author})`);
-        
-        // 5. Reset và đóng bảng
-        document.getElementById('inputTitle').value = "";
-        if(document.getElementById('inputAuthor')) document.getElementById('inputAuthor').value = "";
-        document.getElementById('inputDate').value = "";
-        fileInput.value = "";
-        document.getElementById('modalCreateAlbum').style.display = 'none';
-
-    } catch (error) {
-        alert("❌ Lỗi hệ thống: " + error.message);
-    } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
-    }
+    const file = document.getElementById('inputImage').files[0];
+    if (!file) return alert("Chọn ảnh album!");
+    const r = new FileReader();
+    r.onload = (e) => {
+        database.ref('albums').push({ title, date, img: e.target.result })
+        .then(() => { alert("Đã tạo Album!"); document.getElementById('modalCreateAlbum').style.display='none'; });
+    };
+    r.readAsDataURL(file);
 }
 
 function addJersey() {
@@ -287,111 +202,5 @@ function addVideoLink() {
         input.value = ""; // Xóa trống ô nhập
     }).catch((error) => {
         alert("Lỗi khi lưu: " + error.message);
-    });
-}
-function toggleMenu() {
-    const sidebar = document.getElementById('sidebar');
-    if (!sidebar) return;
-
-    if (sidebar.style.display === 'none' || sidebar.style.display === '') {
-        sidebar.style.display = 'block';
-        // Thêm một chút hiệu ứng lướt (tùy chọn)
-        sidebar.style.animation = "slideIn 0.3s forwards";
-    } else {
-        sidebar.style.display = 'none';
-    }
-}
-
-// Hàm quay lại trang chủ (Dùng để thoát khỏi chế độ xem Album chi tiết)
-function goBackHome() {
-    // Hiện lại trang chủ
-    const mainContent = document.getElementById('main-content');
-    const topBanner = document.querySelector('.top-banner');
-    const mainHeading = document.querySelector('.main-heading');
-    
-    if (mainContent) mainContent.style.display = 'block';
-    if (topBanner) topBanner.style.display = 'block';
-    if (mainHeading) mainHeading.style.display = 'block';
-
-    // Ẩn trang chi tiết Album và trang Thành viên
-    const detailPage = document.getElementById('album-detail-page');
-    const memberPage = document.getElementById('thanh-vien-page');
-    
-    if (detailPage) detailPage.style.display = 'none';
-    if (memberPage) memberPage.style.display = 'none';
-    
-    // Cuộn lên đầu trang
-    window.scrollTo(0, 0);
-}
-// ==========================================
-// 5. HÀM XỬ LÝ XEM CHI TIẾT ALBUM (MỚI THÊM)
-// ==========================================
-
-function openAlbumDetail(albumId) {
-    // 1. Ẩn nội dung trang chủ
-    const mainContent = document.getElementById('main-content');
-    const topBanner = document.querySelector('.top-banner');
-    const mainHeading = document.querySelector('.main-heading');
-    
-    if (mainContent) mainContent.style.display = 'none';
-    if (topBanner) topBanner.style.display = 'none';
-    if (mainHeading) mainHeading.style.display = 'none';
-
-    // 2. Hiển thị khu vực xem chi tiết Album (Kho HTML đã tạo ở Bước 1)
-    let detailArea = document.getElementById('album-detail-page');
-    if (!detailArea) {
-        alert("Lỗi: Không tìm thấy khu vực xem chi tiết Album (Bước 1 chưa thông)!");
-        goBackHome();
-        return;
-    }
-    
-    // Đảm bảo khu vực chi tiết được hiển thị
-    detailArea.style.display = 'block';
-
-    // 3. Lấy dữ liệu Album từ Firebase
-    database.ref('albums/' + albumId).once('value', (snapshot) => {
-        const album = snapshot.val();
-        if (!album) {
-            alert("Không tìm thấy dữ liệu Album!");
-            goBackHome();
-            return;
-        }
-
-        // Lấy danh sách ảnh (Nếu album cũ chỉ có 1 ảnh, thì gom nó lại thành danh sách)
-        const photos = album.photos || [album.cover || album.img];
-
-        // 4. Vẽ giao diện chi tiết Album (Tiêu đề, nút quay lại và Grid ảnh)
-        detailArea.innerHTML = `
-            <div class="container" style="max-width: 1200px; margin: 0 auto; color: #333; padding: 20px; min-height: 100vh; background: white;">
-                
-                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #EEE; padding-bottom: 20px;">
-                    <button class="add-btn" onclick="goBackHome()" style="background: #f5f5f5; color: #333; border: 1px solid #ddd; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s;">
-                        ← Quay lại trang chủ
-                    </button>
-                    
-                    <div style="text-align: right;">
-                        <h2 class="title-member" style="margin: 0; font-size: 36px; color: #D4A017; text-transform: uppercase; font-weight: bold;">
-                            ${album.title}
-                        </h2>
-                        <p style="color: #666; margin: 5px 0 0 0; font-size: 15px; font-weight: 500;">
-                            📅 Ngày: ${album.date} | 🖼️ Tổng số: ${photos.length} ảnh | 👤 Đăng bởi: ${album.author || 'Admin'}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="photo-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 50px;">
-                    ${photos.map(photoUrl => `
-                        <div class="photo-item" style="border-radius: 15px; overflow: hidden; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.08); transition: transform 0.2s; cursor: pointer;" onclick="openLightbox('${photoUrl}')">
-                            <img src="${photoUrl}" style="width: 100%; height: 250px; object-fit: cover; display: block; border-bottom: 1px solid #eee;">
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-
-            <div id="lightbox" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; text-align: center; cursor: pointer;" onclick="closeLightbox()">
-                <span style="position: absolute; top: 20px; right: 30px; color: white; font-size: 50px; font-weight: bold; cursor: pointer;">&times;</span>
-                <img id="lightbox-img" src="" style="max-width: 90%; max-height: 90%; margin-top: 5vh; border: 5px solid white; border-radius: 10px; box-shadow: 0 0 30px rgba(255,255,255,0.3);">
-            </div>
-        `;
     });
 }
