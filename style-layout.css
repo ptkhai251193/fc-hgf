@@ -190,10 +190,30 @@ body {
     gap: 35px;
 }
 
+/* ĐỊNH DẠNG THẺ ALBUM MỚI: TRẮNG MỜ, SANG TRỌNG */
 .album-card {
+    margin: 15px; /* Tăng khoảng cách một chút */
+    padding: 15px;
+    border-radius: 15px; /* Bo tròn góc nhiều hơn cho mềm mại */
+    display: inline-block;
+    width: 280px; /* Tăng chiều rộng một chút */
     position: relative;
-    border-radius: 15px;
-    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Thêm hiệu ứng di chuột */
+    
+    /* ĐÂY LÀ PHẦN NỀN TRẮNG MỜ (FROSTED WHITE) */
+    background: rgba(255, 255, 255, 0.75); /* Màu trắng mờ */
+    backdrop-filter: blur(10px); /* Hiệu ứng làm mờ nền phía sau */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Viền mảnh màu trắng */
+    
+    /* Thêm bóng đổ nhẹ để tạo khối */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1); 
+}
+/* HIỆU ỨNG KHI RÀ CHUỘT VÀO (TÙY CHỌN, RẤT ĐẸP) */
+.album-card:hover {
+    transform: translateY(-5px); /* Nhấc nhẹ thẻ lên */
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15); /* Tăng bóng đổ */
+    background: rgba(255, 255, 255, 0.85); /* Tăng độ đậm màu trắng khi rà chuột */
 }
 
 .album-card::after {

@@ -46,20 +46,20 @@ database.ref('albums').on('value', (snapshot) => {
     
     // Vẽ giao diện Album (Có nút xóa và khu vực bấm để mở chi tiết)
     container.innerHTML = list.map(a => `
-        <div class="album-card" style="margin:10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; display:inline-block; width:250px; position:relative; cursor:pointer;">
-            <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:5px; right:10px; color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
-            
-            <div onclick="openAlbumDetail('${a.id}')">
-                <img src="${a.cover || a.img}" 
-     loading="lazy" 
-     style="width:100%; border-radius:5px; height:150px; object-fit:cover; background: #333;" 
-     onerror="this.src='link_anh_loi.jpg'">
-            <h4 style="color:#ffcc00; margin:5px 0; text-align:center;">${a.title}</h4>
-            <p style="color:#fff; font-size:11px; text-align:center; margin:0;">👤 Người đăng: ${a.author || 'Ẩn danh'}</p>
-            <p style="color:#ccc; font-size:11px; text-align:center; margin:0;">📅 ${a.date}</p>
-            </div>
+    <div class="album-card" onclick="openAlbumDetail('${a.id}')">
+        
+        <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:10px; right:15px; color:rgba(0,0,0,0.5); font-size:25px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
+        
+        <img src="${a.cover || a.img}" style="width:100%; border-radius:10px; height:180px; object-fit:cover; border: 1px solid rgba(255,255,255,0.2);">
+        
+        <h4 style="color:#D4A017; margin:10px 0; text-align:center; font-size: 18px; font-weight: bold;">${a.title}</h4>
+        
+        <div style="display: flex; justify-content: space-around; font-size: 13px; color: #555;">
+            <p style="margin: 0;">👤 ${a.author || 'Phan Trọng Khải'}</p>
+            <p style="margin: 0;">📅 ${a.date}</p>
         </div>
-    `).reverse().join('');
+    </div>
+`).reverse().join('');
 });
 
 // Lắng nghe Áo Đấu
