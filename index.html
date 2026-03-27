@@ -47,30 +47,7 @@
     </style>
 </head>
 <body>
-    <div id="sidebar" style="display: none; position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: white; z-index: 5000; padding: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.1); transition: 0.3s; border-right: 1px solid #eee;">
-    
-    <div style="background: #FFB6C1; padding: 30px 20px; text-align: center; position: relative;">
-        <span onclick="toggleMenu()" style="position: absolute; top: 10px; right: 15px; font-size: 25px; cursor: pointer; color: #555;">&times;</span>
-        <h3 style="color: white; margin: 0; font-size: 20px; letter-spacing: 1px;">DANH MỤC</h3>
-    </div>
 
-    <ul style="list-style: none; padding: 20px 0; margin: 0;">
-        <li style="padding: 15px 25px; border-bottom: 1px solid #f9f9f9;">
-            <a href="#" onclick="goBackHome(); toggleMenu();" style="color: #333; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
-                <span>🏠</span> Trang chủ
-            </a>
-        </li>
-        <li style="padding: 15px 25px; border-bottom: 1px solid #f9f9f9;">
-            <a href="#" onclick="showTab('thanh-vien'); toggleMenu();" style="color: #333; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
-                <span>👥</span> Thành viên
-            </a>
-        </li>
-        </ul>
-
-    <div style="position: absolute; bottom: 30px; width: 100%; text-align: center;">
-        <button onclick="toggleMenu()" style="background: #f5f5f5; color: #888; border: 1px solid #ddd; padding: 8px 30px; border-radius: 20px; cursor: pointer; font-size: 13px;">Đóng Menu</button>
-    </div>
-</div>
     <div id="thanh-vien-page" class="sub-page" style="display: none;">
         <div class="container">
             <div class="section-header">
@@ -97,67 +74,18 @@
         <img src="hinhnen.jpg" alt="Banner">
     </div>
 
-    <header class="main-heading" style="background: rgba(229, 202, 206, 0.8); padding: 15px 0;">
-        <div class="container-header" style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: start; gap: 20px; padding: 0 15px;">
-            
-            <div class="menu-icon" onclick="toggleMenu()" style="cursor:pointer; font-size: 35px; color: black;">☰</div>
-            
-            <div class="header-logo">
-                <img src="logo.png" alt="Logo FC.HGF" style="width: 100px; height: 100px; object-fit: contain; display: block;">
+    <header class="main-heading">
+        <div class="container-header">
+            <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
+                <div class="menu-icon" onclick="toggleMenu()" style="cursor:pointer; font-size: 25px; color: white;">☰</div>
+                <img src="logo.png" alt="Logo" class="logo-img" style="width: 50px;">
+                <div class="header-info">
+                    <span class="team-text" style="font-size: 24px; color: #FFD700; font-weight: bold;">FC.HGF</span>
+                </div>
             </div>
-
-            </div>
+            <p class="team-desc" style="color: white; font-style: italic; margin-top: 10px;">"Nơi lưu giữ những bước chạy và tinh thần bất diệt."</p>
+        </div>
     </header>
-
-    <div id="marquee-container" style="background: #fff; overflow: hidden; white-space: nowrap; padding: 12px 0; border-bottom: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
-        <marquee behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" style="color: #333; font-style: italic; font-size: 15px; font-weight: 600; font-family: 'Times New Roman', serif; display: block;">
-            "Nơi lưu giữ những bước chạy, những bàn thắng và tinh thần đồng đội bất diệt. Mỗi tấm hình là một câu chuyện, mỗi album là một hành trình."
-        </marquee>
-    </div>
-    
-<style>
-/* Khôi phục lại hiển thị hàng dọc chuẩn */
-#album-list, #video-list {
-    display: block; 
-    overflow-x: hidden;
-    white-space: normal;
-    text-align: center;
-    padding: 20px 0;
-}
-
-.album-card {
-    display: inline-block;
-    vertical-align: top;
-    margin: 15px;
-    width: 280px;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-/* Điều chỉnh lại kích thước thẻ khi ở chế độ kéo ngang */
-.album-card, .jersey-card {
-    flex: 0 0 280px; /* Không cho phép thẻ bị co bóp, cố định rộng 280px */
-    scroll-snap-align: start; /* Điểm dừng khi vuốt */
-    display: inline-block;
-    vertical-align: top;
-    white-space: normal; /* Cho phép chữ bên trong thẻ vẫn xuống dòng bình thường */
-}
-
-/* Trên điện thoại nhỏ, thu nhỏ thẻ lại một chút để lộ phần thẻ tiếp theo */
-@media (max-width: 480px) {
-    .album-card, .jersey-card {
-        flex: 0 0 80%; /* Thẻ chiếm 80% màn hình, để lòi ra 20% thẻ sau cho người ta biết mà vuốt */
-    }
-}
-/* Hiệu ứng chạy từ phải sang trái */
-@keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); } /* Chạy hết một nửa độ dài để lặp lại mượt mà */
-}
-</style>
 
     <div id="main-content">
         <main class="content-area" style="padding: 20px;">
@@ -177,7 +105,7 @@
                 <div class="section-label" style="color: #FFD700; font-weight: bold;">ALBUM KỶ NIỆM</div>
                 <button class="btn-create-small" onclick="openAlbumModal()">Tạo Album</button>
             </div>
-            <div id="album-list" class="album-grid"></div>
+            <div id="albumContainer" class="album-grid"></div>
 
             <hr style="border: 0.5px solid rgba(255,255,255,0.2); margin: 30px 0;">
 
@@ -185,7 +113,7 @@
                 <div class="section-label" style="color: #FFD700; font-weight: bold;">VIDEOS KỶ NIỆM</div>
                 <button class="btn-create-small" onclick="openVideoModal()">+ Thêm Video</button>
             </div>
-            <div id="video-list" class="album-grid" style="margin-top: 20px;"></div>
+            <div id="videoContainer" class="album-grid" style="margin-top: 20px;"></div>
 
         </main>
     </div>
@@ -193,18 +121,11 @@
     <div id="modalCreateAlbum" class="modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 1000;">
         <div class="modal-content" style="background: #222; width: 90%; max-width: 400px; margin: 50px auto; padding: 20px; border-radius: 10px; color: white;">
             <span onclick="document.getElementById('modalCreateAlbum').style.display='none'" style="float:right; cursor:pointer;">&times;</span>
-            <h3 style="color: white; margin-bottom: 15px;">Thêm Album Mới</h3>
-
-<input type="text" id="inputTitle" placeholder="Tiêu đề album" style="width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 6px; border: none; background: #fff; color: #333; font-size: 15px;">
-
-<input type="text" id="inputAuthor" placeholder="Tên người đăng (Vd: Manager, Admin...)" style="width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 6px; border: none; background: #fff; color: #333; font-size: 15px;">
-
-<input type="date" id="inputDate" style="width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 6px; border: none; background: #fff; color: #333; font-size: 15px;">
-
-<input type="file" id="inputImage" accept="image/*" multiple style="width: 100%; margin: 10px 0; color: white;">
-<p style="color: #aaa; font-size: 11px; margin-top: -5px;">* Mẹo: Giữ phím Ctrl (máy tính) hoặc nhấn giữ ảnh (điện thoại) để chọn nhiều tấm.</p>
-
-<button onclick="addAlbum()" style="width: 100%; padding: 10px; background: #0ae307; border: none; color: white; border-radius: 5px; font-weight: bold; cursor: pointer;">LƯU ALBUM</button>
+            <h3>Thêm Album Mới</h3>
+            <input type="text" id="inputTitle" placeholder="Tiêu đề" style="width: 100%; margin: 10px 0; padding: 8px;">
+            <input type="date" id="inputDate" style="width: 100%; margin: 10px 0; padding: 8px;">
+            <input type="file" id="inputImage" accept="image/*" style="width: 100%; margin: 10px 0;">
+            <button onclick="addAlbum()" style="width: 100%; padding: 10px; background: #0ae307; border: none; color: white; border-radius: 5px;">Lưu Album</button>
         </div>
     </div>
 
@@ -220,12 +141,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
     <script src="script-ui.js"></script>
-<div id="album-detail-page" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; overflow-y: auto; padding: 20px;">
-        </div>
 
-    <div id="photoViewer" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; flex-direction: column;" onclick="this.style.display='none'">
-        <img id="fullPhoto" src="" style="max-width: 95%; max-height: 85%; border: 2px solid white; border-radius: 5px;">
-        <p style="color: white; margin-top: 15px;">Bấm vào bất kỳ đâu để đóng</p>
-    </div>
 </body>
 </html>
