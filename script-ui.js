@@ -1,4 +1,3 @@
-@ -1,162 +1,171 @@
 // 1. Cấu hình Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
@@ -52,7 +51,6 @@ database.ref('albums').on('value', (snapshot) => {
             
             <div onclick="openAlbumDetail('${a.id}')">
                 <img src="${a.cover || a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover; border: 2px solid #555;">
-                // Tìm đoạn innerHTML của album và thêm dòng p dưới đây
             <h4 style="color:#ffcc00; margin:5px 0; text-align:center;">${a.title}</h4>
             <p style="color:#fff; font-size:11px; text-align:center; margin:0;">👤 Người đăng: ${a.author || 'Ẩn danh'}</p>
             <p style="color:#ccc; font-size:11px; text-align:center; margin:0;">📅 ${a.date}</p>
@@ -114,37 +112,31 @@ function addMember() {
 }
 
 async function addAlbum() {
-    // 1. Lấy dữ liệu từ các ô nhập
-    const title = document.getElementById('inputTitle').value.trim();
-    const author = document.getElementById('inputAuthor').value.trim(); // Lấy tên từ ô mới tạo
-    const author = document.getElementById('inputAuthor') ? document.getElementById('inputAuthor').value.trim() : ""; // Kiểm tra nếu ô Người đăng tồn tại
-    const date = document.getElementById('inputDate').value;
+    const titleInput = document.getElementById('inputTitle');
+    const authorInput = document.getElementById('inputAuthor');
+    const dateInput = document.getElementById('inputDate');
     const fileInput = document.getElementById('inputImage');
-    const files = fileInput.files;
 
-    // Kiểm tra thêm điều kiện người đăng
-    if (!title || !author || !date || files.length === 0) {
-        return alert("Vui lòng nhập đầy đủ Tiêu đề, Người đăng, Ngày và Ảnh!");
+    const title = titleInput ? titleInput.value.trim() : "";
+    const author = authorInput ? authorInput.value.trim() : "Ẩn danh";
+    const date = dateInput ? dateInput.value : "";
+    const files = fileInput ? fileInput.files : [];
+
+    if (!title || !date || files.length === 0) {
+        return alert("Vui lòng nhập đầy đủ Tiêu đề, Ngày và ít nhất 1 tấm ảnh!");
     }
-    // 2. Kiểm tra điều kiện (Nếu thiếu sẽ báo Alert và dừng lại)
-    if (!title) return alert("Bạn chưa nhập Tiêu đề Album!");
-    if (!author) return alert("Bạn chưa nhập Tên người đăng!");
-    if (!date) return alert("Bạn chưa chọn Ngày tháng!");
-    if (files.length === 0) return alert("Bạn chưa chọn ảnh nào!");
 
-    const btn = document.querySelector("#modalCreateAlbum .btn-submit");
-    // 3. Hiển thị trạng thái đang xử lý
-    const btn = document.querySelector("#modalCreateAlbum .btn-submit") || document.querySelector("#modalCreateAlbum button[onclick='addAlbum()']");
-    const originalText = btn.innerText;
-    btn.innerText = "Đang xử lý...";
-    btn.innerText = `⏳ Đang tải ${files.length} ảnh...`;
-    btn.disabled = true;
+    const btn = document.querySelector("#modalCreateAlbum .btn-submit") || document.querySelector("button[onclick='addAlbum()']");
+    const originalText = btn ? btn.innerText : "Đăng";
+    
+    if(btn) {
+        btn.innerText = `⏳ Đang tải ${files.length} ảnh...`;
+        btn.disabled = true;
+    }
 
     try {
         const photoPromises = [];
-        // Chuyển đổi tất cả ảnh sang dạng dữ liệu
         for (let i = 0; i < files.length; i++) {
-            photoPromises.push(fileToDataURL(files[i]));
             photoPromises.push(new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = (e) => resolve(e.target.result);
@@ -154,36 +146,109 @@ async function addAlbum() {
 
         const allPhotos = await Promise.all(photoPromises);
 
-        // Đẩy lên Firebase kèm thông tin người đăng
-        // 4. Đẩy lên Firebase (Lưu cả mảng ảnh và Người đăng)
         await database.ref('albums').push({
             title: title,
-            author: author, // Lưu tên người đăng vào database
-            author: author, // Lưu tên người đăng
+            author: author,
             date: date,
             cover: allPhotos[0],
             photos: allPhotos,
-            cover: allPhotos[0], // Lấy ảnh đầu làm đại diện
-            photos: allPhotos,   // Danh sách tất cả ảnh
             timestamp: Date.now()
         });
 
-        alert(`Thành công! Album đã được đăng bởi ${author}`);
-        alert(`✅ Thành công! Đã tạo Album '${title}' (Đăng bởi: ${author})`);
+        alert(`✅ Thành công! Album đã được đăng bởi ${author}`);
         
-        // Reset form và đóng modal
-        // 5. Reset và đóng bảng
-        document.getElementById('inputTitle').value = "";
-        document.getElementById('inputAuthor').value = ""; // Xóa trắng ô sau khi xong
-        document.getElementById('inputImage').value = "";
-        if(document.getElementById('inputAuthor')) document.getElementById('inputAuthor').value = "";
-        document.getElementById('inputDate').value = "";
+        // Reset form
+        titleInput.value = "";
+        if(authorInput) authorInput.value = "";
+        dateInput.value = "";
         fileInput.value = "";
         document.getElementById('modalCreateAlbum').style.display = 'none';
 
     } catch (error) {
-        alert("Lỗi: " + error.message);
-        alert("❌ Lỗi hệ thống: " + error.message);
+        alert("❌ Lỗi: " + error.message);
     } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
+        if(btn) {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    }
+}
+
+// ==========================================
+// 4. HÀM XÓA DỮ LIỆU CÓ MẬT KHẨU (ADMIN)
+// ==========================================
+function deleteData(path) {
+    const password = prompt("Xác nhận quyền quản trị: Vui lòng nhập mật khẩu để xóa.");
+    if (password === "HGF2026") {
+        const confirmFinal = confirm("Bạn có chắc chắn muốn xóa vĩnh viễn dữ liệu này?");
+        if (confirmFinal) {
+            database.ref(path).remove()
+                .then(() => alert("Đã xóa thành công!"))
+                .catch(err => alert("Lỗi: " + err.message));
+        }
+    } else if (password !== null) {
+        alert("Mật khẩu không chính xác!");
+    }
+}
+
+// ==========================================
+// 5. HÀM MỞ CHI TIẾT ALBUM (POPUP)
+// ==========================================
+function openAlbumDetail(albumId) {
+    const modal = document.getElementById('modalAlbumDetail');
+    const grid = document.getElementById('photoGrid');
+    const title = document.getElementById('detailTitle');
+    
+    if(!modal || !grid) return;
+
+    // Lấy dữ liệu album cụ thể từ Firebase
+    database.ref('albums/' + albumId).once('value', (snapshot) => {
+        const album = snapshot.val();
+        if (!album) return;
+
+        title.innerText = album.title;
+        modal.style.display = 'block';
+        grid.innerHTML = "<p style='color:#666;'>Đang tải ảnh...</p>";
+
+        // Nếu có mảng ảnh photos
+        if (album.photos && album.photos.length > 0) {
+            grid.innerHTML = album.photos.map(src => `
+                <img src="${src}" class="photo-item" onclick="viewPhoto('${src}')" 
+                     style="width:100%; height:120px; object-fit:cover; border-radius:8px; cursor:pointer;">
+            `).join('');
+        } else {
+            grid.innerHTML = "<p>Album này chưa có ảnh chi tiết.</p>";
+        }
+    });
+}
+
+// Hàm phóng to ảnh
+function viewPhoto(src) {
+    const viewer = document.getElementById('photoViewer');
+    const fullImg = document.getElementById('fullPhoto');
+    if(viewer && fullImg) {
+        fullImg.src = src;
+        viewer.style.display = 'flex';
+    }
+}
+
+// Các hàm đóng mở Form nhanh
+function toggleAddMemberForm() {
+    const f = document.getElementById('addMemberForm');
+    if(f) f.style.display = (f.style.display === 'none') ? 'block' : 'none';
+}
+
+function openAlbumModal() {
+    document.getElementById('modalCreateAlbum').style.display = 'block';
+}
+
+// Hàm thêm Video nhanh
+function addVideo() {
+    const url = document.getElementById('videoUrl').value;
+    if(!url) return alert("Dán link YouTube vào!");
+    database.ref('videos').push({ url: url })
+    .then(() => {
+        alert("Đã thêm video!");
+        document.getElementById('videoUrl').value = "";
+    });
+}
