@@ -114,7 +114,40 @@
             "Nơi lưu giữ những bước chạy, những bàn thắng và tinh thần đồng đội bất diệt. Mỗi tấm hình là một câu chuyện, mỗi album là một hành trình."
         </marquee>
     </div>
+    
 <style>
+    /* Khung chứa các thẻ Album/Áo đấu */
+.horizontal-scroll-wrapper {
+    display: flex !important; /* Ép các phần tử nằm trên 1 hàng */
+    overflow-x: auto !important; /* Cho phép vuốt ngang */
+    overflow-y: hidden; 
+    white-space: nowrap; /* Tuyệt đối không cho xuống dòng */
+    gap: 15px; /* Khoảng cách giữa các thẻ */
+    padding: 10px 15px 20px 15px;
+    scroll-snap-type: x mandatory; /* Vuốt đến đâu dừng đúng thẻ đó */
+    -webkit-overflow-scrolling: touch; /* Vuốt mượt trên iPhone */
+}
+
+/* Ẩn thanh cuộn xấu xí trên trình duyệt */
+.horizontal-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+/* Điều chỉnh lại kích thước thẻ khi ở chế độ kéo ngang */
+.album-card, .jersey-card {
+    flex: 0 0 280px; /* Không cho phép thẻ bị co bóp, cố định rộng 280px */
+    scroll-snap-align: start; /* Điểm dừng khi vuốt */
+    display: inline-block;
+    vertical-align: top;
+    white-space: normal; /* Cho phép chữ bên trong thẻ vẫn xuống dòng bình thường */
+}
+
+/* Trên điện thoại nhỏ, thu nhỏ thẻ lại một chút để lộ phần thẻ tiếp theo */
+@media (max-width: 480px) {
+    .album-card, .jersey-card {
+        flex: 0 0 80%; /* Thẻ chiếm 80% màn hình, để lòi ra 20% thẻ sau cho người ta biết mà vuốt */
+    }
+}
 /* Hiệu ứng chạy từ phải sang trái */
 @keyframes marquee {
     0% { transform: translateX(0); }

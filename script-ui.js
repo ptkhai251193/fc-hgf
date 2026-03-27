@@ -34,7 +34,7 @@ database.ref('members').on('value', (s) => {
 // --- THAY THẾ ĐOẠN LẮNG NGHE ALBUM CŨ (PHẦN 2) ---
 database.ref('albums').on('value', (snapshot) => {
     const data = snapshot.val();
-    const container = document.getElementById('albumContainer');
+    const container = document.getElementById('album-list');
     if (!container) return;
 
     if (!data) {
