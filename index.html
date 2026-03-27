@@ -155,20 +155,23 @@
 
     <div id="modalCreateAlbum" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeAlbumModal()">&times;</span>
-        <h2 style="color: #fff; margin-bottom: 20px;">Thêm Album Mới</h2>
-
-        <input type="text" id="inputTitle" placeholder="Tiêu đề album">
+        <span class="close-btn" onclick="closeAlbumModal()">&times;</span>
+        <h2 style="color:white">Thêm Album Mới</h2>
         
-        <input type="text" id="inputAuthor" placeholder="Tên người đăng (Vd: Manager, Admin...)">
+        <div class="input-group">
+            <input type="text" id="inputTitle" placeholder="Tiêu đề album">
+        </div>
         
-        <input type="date" id="inputDate">
+        <div class="input-group">
+            <input type="text" id="inputAuthor" placeholder="Tên người đăng">
+        </div>
+        
+        <div class="input-group">
+            <input type="date" id="inputDate">
+        </div>
 
-        <div style="margin: 15px 0;">
-            <input type="file" id="inputImage" multiple accept="image/*">
-            <p style="color: #ccc; font-size: 11px; margin-top: 5px;">
-                * Mẹo: Giữ phím Ctrl (máy tính) hoặc nhấn giữ ảnh (điện thoại) để chọn nhiều tấm.
-            </p>
+        <div class="input-group">
+            <input type="file" id="inputImage" multiple>
         </div>
 
         <button class="btn-submit" onclick="addAlbum()">ĐĂNG ALBUM</button>
