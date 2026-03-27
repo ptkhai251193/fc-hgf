@@ -126,7 +126,7 @@
         <main class="content-area" style="padding: 20px;">
             <div class="section-header-group" style="display: flex; justify-content: space-between; align-items: center;">
                 <div class="section-label" style="color: #FFD700; font-weight: bold;">ÁO ĐẤU</div>
-                <button class="btn-create-small" onclick="openJerseyUpload()">+ Thêm Áo</button>
+                <button class="btn-create-small" onclick="openJerseyModal()">+ Thêm Áo</button>
             </div>
             <div id="jerseyUploadArea" style="display: none; margin: 15px 0; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
                 <input type="file" id="jerseyImgInput" accept="image/*" style="color: white;">
@@ -152,7 +152,22 @@
 
         </main>
     </div>
+<div id="modalJersey" class="modal" style="display: none;">
+    <div class="modal-content" style="background: white; border: 2px solid #0088cc; border-radius: 15px;">
+        <span class="close-btn" onclick="document.getElementById('modalJersey').style.display='none'">&times;</span>
+        <h2 style="color: #333; margin-bottom: 20px; text-align: center;">Thêm Mẫu Áo Mới</h2>
+        
+        <div class="input-group" style="margin-bottom: 20px;">
+            <label style="color: #555; display: block; margin-bottom: 10px;">Chọn hình ảnh áo đấu:</label>
+            <input type="file" id="inputJerseyFile" accept="image/*" style="width: 100%;">
+        </div>
 
+        <button class="btn-submit" onclick="handleJerseyUpload()" 
+                style="width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">
+            XÁC NHẬN LƯU
+        </button>
+    </div>
+</div>
     <div id="modalCreateAlbum" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeAlbumModal()">&times;</span>
@@ -201,6 +216,7 @@
                 </div>
         </div>
     </div>
+    
 
     <div id="photoViewer" onclick="this.style.display='none'" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; justify-content: center; align-items: center; cursor: zoom-out;">
         <img id="fullPhoto" src="" style="max-width: 95%; max-height: 90%; border: 3px solid white; border-radius: 5px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">

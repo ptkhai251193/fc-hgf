@@ -297,3 +297,36 @@ function goBackHome() {
 function closeTab() {
     document.getElementById("tabContentOverlay").style.display = "none";
 }
+// Hàm mở Modal Áo đấu
+function openJerseyModal() {
+    document.getElementById('modalJersey').style.display = 'block';
+}
+
+// Hàm xử lý lưu Áo đấu
+function handleJerseyUpload() {
+    const fileInput = document.getElementById('inputJerseyFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Anh Manager ơi, vui lòng chọn một tấm ảnh áo đấu đã nhé!");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const jerseyData = event.target.result;
+        let jerseys = JSON.parse(localStorage.getItem('myJerseys')) || [];
+        jerseys.push(jerseyData);
+        localStorage.setItem('myJerseys', JSON.stringify(jerseys));
+        
+        if (typeof loadJerseys === "function") {
+            loadJerseys(); // Cập nhật lại danh sách áo ngoài màn hình
+        }
+        
+        // Dọn dẹp và đóng bảng
+        fileInput.value = ""; 
+        document.getElementById('modalJersey').style.display = 'none';
+        alert("Đã lưu mẫu áo thành công rồi anh nhé!");
+    };
+    reader.readAsDataURL(file);
+}
