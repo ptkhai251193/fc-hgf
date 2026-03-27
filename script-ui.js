@@ -51,7 +51,6 @@ database.ref('albums').on('value', (snapshot) => {
             
             <div onclick="openAlbumDetail('${a.id}')">
                 <img src="${a.cover || a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover; border: 2px solid #555;">
-                // Tìm đoạn innerHTML của album và thêm dòng p dưới đây
             <h4 style="color:#ffcc00; margin:5px 0; text-align:center;">${a.title}</h4>
             <p style="color:#fff; font-size:11px; text-align:center; margin:0;">👤 Người đăng: ${a.author || 'Ẩn danh'}</p>
             <p style="color:#ccc; font-size:11px; text-align:center; margin:0;">📅 ${a.date}</p>
