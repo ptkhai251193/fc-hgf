@@ -190,10 +190,20 @@ body {
     gap: 35px;
 }
 
+/* Tìm và sửa lại đoạn này trong file style-layout.css */
 .album-card {
-    background: white !important; /* Đổi từ màu xám sang trắng */
-    padding: 0 !important;        /* Xóa padding cũ để ôm sát khung trắng mới */
-    border: none !important;      /* Bỏ viền cũ */
+    background-color: white !important; /* Nền trắng */
+    border: 2px solid #cccccc !important; /* Màu viền xám nhạt */
+    border-radius: 15px; /* Bo góc cho đồng bộ */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; /* Thêm đổ bóng nhẹ cho nổi */
+    overflow: hidden; /* Giúp ảnh không bị tràn qua viền */
+    transition: 0.3s; /* Hiệu ứng khi di chuột vào */
+}
+
+/* Thêm hiệu ứng nổi bật khi di chuột vào */
+.album-card:hover {
+    border-color: #007bff !important; /* Đổi viền sang màu xanh khi di chuột */
+    transform: translateY(-5px); /* Nhấc nhẹ ô lên */
 }
 
 .album-card::after {

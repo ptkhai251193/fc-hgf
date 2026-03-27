@@ -20,9 +20,9 @@ function loadAlbums() {
             }
         };
 
-        div.innerHTML = `
-    <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #eee; margin-bottom: 20px;">
-        <img src="${album.image}" class="album-preview" style="width: 100%; height: 180px; object-fit: cover;">
+       div.innerHTML = `
+    <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 2px solid #ddd; margin-bottom: 20px;">
+        <img src="${album.image}" class="album-preview" style="width: 100%; height: 180px; object-fit: cover; border-bottom: 2px solid #eee;">
         <div style="padding: 15px; text-align: center;">
             <h3 style="color: #333; margin: 0 0 8px 0; font-size: 18px;">${album.title}</h3>
             <p style="color: #666; font-size: 13px; margin: 0;">
