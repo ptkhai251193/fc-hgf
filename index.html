@@ -47,7 +47,25 @@
     </style>
 </head>
 <body>
+    <div id="sideMenu" class="side-menu">
+    <div class="menu-header">
+        <h3 style="color: #1c2c5b; margin: 0;">DANH MỤC FC</h3>
+        <span class="close-btn" onclick="toggleMenu()" style="font-size: 30px;">×</span>
+    </div>
+    <ul class="menu-list">
+        <li onclick="goBackHome()">🏠 Trang Chủ</li>
+        <li onclick="showTab('thanh-vien')">⚽ Danh Sách Thành Viên</li>
+        <li>👕 Mẫu Áo Đấu</li>
+        <li>🎬 Video Kỷ Niệm</li>
+        <li>🏆 Bảng Thành Tích</li>
+    </ul>
+</div>
 
+<div class="menu-icon" onclick="toggleMenu()">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
     <div id="thanh-vien-page" class="sub-page" style="display: none;">
         <div class="container">
             <div class="section-header">
@@ -138,9 +156,13 @@
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-database-compat.js"></script>
-    <script src="script-ui.js"></script>
+   <link rel="stylesheet" href="layout.css">
+<link rel="stylesheet" href="modal.css">
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="Ui.js"></script>
+<script src="data.js"></script>
+<script src="detail.js"></script>
 </body>
 </html>

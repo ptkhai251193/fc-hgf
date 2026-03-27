@@ -204,3 +204,37 @@ function addVideoLink() {
         alert("Lỗi khi lưu: " + error.message);
     });
 }
+// 1. Hàm đóng/mở Menu
+function toggleMenu() {
+    // Tìm cái Menu dựa trên ID (Đảm bảo trong HTML bạn có <div id="sideMenu">)
+    const menu = document.getElementById("sideMenu");
+    if (menu) {
+        menu.classList.toggle("active");
+    } else {
+        console.error("Lỗi: Không tìm thấy phần tử có ID là 'sideMenu' trong HTML");
+        // Nếu không tìm thấy sideMenu, hãy thử tìm class side-menu
+        const menuByClass = document.querySelector(".side-menu");
+        if(menuByClass) menuByClass.classList.toggle("active");
+    }
+}
+
+// 2. Hàm chuyển Tab (Thành viên / Trang chủ)
+function showTab(tabName) {
+    const mainContent = document.getElementById("main-content");
+    const thanhVienPage = document.getElementById("thanh-vien-page");
+    const banner = document.querySelector('.top-banner');
+    const heading = document.querySelector('.main-heading');
+
+    if (tabName === 'thanh-vien') {
+        if(mainContent) mainContent.style.display = "none";
+        if(banner) banner.style.display = "none";
+        if(heading) heading.style.display = "none";
+        if(thanhVienPage) thanhVienPage.style.display = "block";
+    } else {
+        if(mainContent) mainContent.style.display = "block";
+        if(banner) banner.style.display = "block";
+        if(heading) heading.style.display = "block";
+        if(thanhVienPage) thanhVienPage.style.display = "none";
+    }
+    toggleMenu(); // Đóng menu sau khi chọn
+}
