@@ -343,3 +343,77 @@ function addJersey() {
     };
     reader.readAsDataURL(file);
 }
+// Hàm mở bảng tạo Album mới
+function openAlbumModal() {
+    const modal = document.getElementById('modalCreateAlbum');
+    if (modal) {
+        modal.style.display = 'block';
+        // Reset lại form mỗi khi mở để tránh dữ liệu cũ
+        const inputs = modal.querySelectorAll('input');
+        inputs.forEach(input => {
+            if(input.type !== 'button' && input.type !== 'submit') {
+                input.value = '';
+            }
+        });
+    } else {
+        console.error("Lỗi: Không tìm thấy ID 'modalCreateAlbum' trong HTML");
+        alert("Không tìm thấy bảng tạo Album. Vui lòng kiểm tra lại file HTML!");
+    }
+}
+
+// Hàm đóng bảng tạo Album
+function closeAlbumModal() {
+    const modal = document.getElementById('modalCreateAlbum');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+// Hàm mở Modal nhập link Video
+function openVideoModal() {
+    const modal = document.getElementById('modalVideoLink');
+    if (modal) {
+        modal.style.display = 'flex'; // Sử dụng flex để căn giữa bảng
+        // Tự động xóa link cũ nếu có
+        const input = document.getElementById('videoUrl');
+        if(input) input.value = "";
+    } else {
+        console.error("Lỗi: Không tìm thấy ID 'modalVideoLink' trong HTML");
+        alert("Tính năng Thêm Video đang gặp sự cố kỹ thuật!");
+    }
+}
+
+// Hàm đóng Modal nhập link Video
+function closeVideoModal() {
+    const modal = document.getElementById('modalVideoLink');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Hàm gửi Video lên Firebase (Dành cho Manager)
+function addVideo() {
+    const urlInput = document.getElementById('videoUrl');
+    const url = urlInput ? urlInput.value.trim() : "";
+
+    if (!url) return alert("Anh vui lòng dán link YouTube vào nhé!");
+
+    // Hiển thị trạng thái đang tải
+    const btn = document.querySelector("#modalVideoLink .btn-submit");
+    const originalText = btn.innerText;
+    btn.innerText = "⏳ Đang đăng...";
+    btn.disabled = true;
+
+    database.ref('videos').push({
+        url: url,
+        timestamp: Date.now()
+    })
+    .then(() => {
+        alert("✅ Đã thêm Video kỷ niệm thành công!");
+        closeVideoModal();
+    })
+    .catch(err => alert("❌ Lỗi: " + err.message))
+    .finally(() => {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    });
+}
