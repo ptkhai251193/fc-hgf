@@ -69,26 +69,21 @@ function compressDetailImage(file, callback) {
     };
 }
 
-// Xử lý khi nhấn nút chọn thêm ảnh từ máy tính
+// Sửa đoạn xử lý khi chọn thêm ảnh (Dòng 66 trong file của bạn)
 document.getElementById('inputAddPhotos').addEventListener('change', function(e) {
     const files = e.target.files;
-    let albums = JSON.parse(localStorage.getItem('myAlbums'));
     
-    if (!albums[currentAlbumIndex].photos) {
-        albums[currentAlbumIndex].photos = [];
-    }
+    // Lấy ID của Album đang mở trên Firebase (giả sử bạn lưu id vào currentAlbumId)
+    const albumId = currentAlbumId; 
 
-    // Duyệt qua từng file ảnh được chọn
     Array.from(files).forEach(file => {
         compressDetailImage(file, function(compressedBase64) {
-            albums[currentAlbumIndex].photos.push(compressedBase64);
-            
-            try {
-                localStorage.setItem('myAlbums', JSON.stringify(albums));
-                renderPhotos(); // Vẽ lại lưới ảnh ngay lập tức
-            } catch (err) {
-                alert("Bộ nhớ đã đầy, không thể thêm thêm ảnh!");
-            }
+            // ĐẨY THẲNG LÊN FIREBASE ĐỂ MỌI NGƯỜI CÙNG THẤY
+            database.ref(`albums/${albumId}/photos`).push(compressedBase64)
+            .then(() => {
+                console.log("Đã đồng bộ ảnh lên đám mây!");
+            })
+            .catch(err => alert("Lỗi đồng bộ: " + err.message));
         });
     });
 });
