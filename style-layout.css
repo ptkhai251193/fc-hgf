@@ -191,10 +191,9 @@ body {
 }
 
 .album-card {
-    background-color: white !important; /* Đổi từ màu xám/trong suốt sang trắng */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Thêm đổ bóng nhẹ để nổi bật trên nền web */
-    border: 1px solid #ddd; /* Thêm viền mỏng cho sắc nét */
-    color: #333; /* Đổi màu chữ bên trong ô sang màu đen/xám đậm */
+    background: white !important; /* Đổi từ màu xám sang trắng */
+    padding: 0 !important;        /* Xóa padding cũ để ôm sát khung trắng mới */
+    border: none !important;      /* Bỏ viền cũ */
 }
 
 .album-card::after {
