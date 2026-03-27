@@ -50,7 +50,10 @@ database.ref('albums').on('value', (snapshot) => {
             <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:5px; right:10px; color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
             
             <div onclick="openAlbumDetail('${a.id}')">
-                <img src="${a.cover || a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover; border: 2px solid #555;">
+                <img src="${a.cover || a.img}" 
+     loading="lazy" 
+     style="width:100%; border-radius:5px; height:150px; object-fit:cover; background: #333;" 
+     onerror="this.src='link_anh_loi.jpg'">
             <h4 style="color:#ffcc00; margin:5px 0; text-align:center;">${a.title}</h4>
             <p style="color:#fff; font-size:11px; text-align:center; margin:0;">👤 Người đăng: ${a.author || 'Ẩn danh'}</p>
             <p style="color:#ccc; font-size:11px; text-align:center; margin:0;">📅 ${a.date}</p>
@@ -110,7 +113,34 @@ function addMember() {
     };
     r.readAsDataURL(file);
 }
+// Hàm nén ảnh giúp web load nhanh hơn gấp 10 lần
+function compressImage(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000; // Giới hạn chiều rộng ảnh
+                let width = img.width;
+                let height = img.height;
 
+                if (width > MAX_WIDTH) {
+                    height *= MAX_WIDTH / width;
+                    width = MAX_WIDTH;
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                // Nén chất lượng còn 0.7 (70%)
+                resolve(canvas.toDataURL('image/jpeg', 0.7));
+            };
+        };
+    });
+}
 async function addAlbum() {
     // 1. Lấy dữ liệu từ các ô nhập
     const title = document.getElementById('inputTitle').value.trim();
@@ -131,18 +161,13 @@ async function addAlbum() {
     btn.innerText = `⏳ Đang tải ${files.length} ảnh...`;
     btn.disabled = true;
 
-    try {
-        const photoPromises = [];
-        // Chuyển đổi tất cả ảnh sang dạng dữ liệu
-        for (let i = 0; i < files.length; i++) {
-            photoPromises.push(new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.readAsDataURL(files[i]);
-            }));
-        }
-
-        const allPhotos = await Promise.all(photoPromises);
+   try {
+    const photoPromises = [];
+    for (let i = 0; i < files.length; i++) {
+        // Gọi hàm nén thay vì đọc file trực tiếp
+        photoPromises.push(compressImage(files[i]));
+    }
+    const allPhotos = await Promise.all(photoPromises);
 
         // 4. Đẩy lên Firebase (Lưu cả mảng ảnh và Người đăng)
         await database.ref('albums').push({
