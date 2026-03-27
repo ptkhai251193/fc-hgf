@@ -191,9 +191,10 @@ body {
 }
 
 .album-card {
-    position: relative;
-    border-radius: 15px;
-    overflow: hidden;
+    background-color: white !important; /* Đổi từ màu xám/trong suốt sang trắng */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Thêm đổ bóng nhẹ để nổi bật trên nền web */
+    border: 1px solid #ddd; /* Thêm viền mỏng cho sắc nét */
+    color: #333; /* Đổi màu chữ bên trong ô sang màu đen/xám đậm */
 }
 
 .album-card::after {
@@ -233,12 +234,7 @@ body {
 }
 
 .album-card p {
-    padding: 0 20px 20px;
-    color: #718093;
-    font-size: 0.95rem;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    color: #666 !important;
 }
 
 /* Nút xóa được làm ẩn đi, chỉ hiện khi cần */
