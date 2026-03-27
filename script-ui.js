@@ -295,3 +295,51 @@ function addVideo() {
         alert("❌ Lỗi: " + error.message);
     });
 }
+// Hàm đóng/mở khu vực chọn ảnh áo đấu
+function openJerseyUpload() {
+    const area = document.getElementById('jerseyUploadArea');
+    if (area) {
+        // Nếu đang ẩn thì hiện, đang hiện thì ẩn
+        area.style.display = (area.style.display === 'none' || area.style.display === '') ? 'block' : 'none';
+    } else {
+        console.error("Không tìm thấy ID 'jerseyUploadArea' trong HTML");
+    }
+}
+
+// Hàm gửi ảnh Áo Đấu lên Firebase
+function addJersey() {
+    const fileInput = document.getElementById('jerseyImgInput');
+    const file = fileInput.files[0];
+    
+    if (!file) return alert("Vui lòng chọn một tấm ảnh áo đấu!");
+
+    // Hiển thị trạng thái đang tải
+    const btn = document.querySelector("#jerseyUploadArea button");
+    const originalText = btn.innerText;
+    btn.innerText = "Đang tải...";
+    btn.disabled = true;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Image = e.target.result;
+
+        // Đẩy lên nhánh 'jerseys' trên Firebase
+        database.ref('jerseys').push({
+            img: base64Image,
+            timestamp: Date.now()
+        })
+        .then(() => {
+            alert("✅ Đã thêm mẫu áo đấu mới!");
+            fileInput.value = ""; // Xóa file đã chọn
+            openJerseyUpload();   // Đóng khung nhập
+        })
+        .catch(err => {
+            alert("❌ Lỗi: " + err.message);
+        })
+        .finally(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        });
+    };
+    reader.readAsDataURL(file);
+}
