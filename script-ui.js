@@ -1,3 +1,4 @@
+@ -1,162 +1,171 @@
 // 1. Cấu hình Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
@@ -31,20 +32,31 @@ database.ref('members').on('value', (s) => {
     `).join('');
 });
 
-database.ref('albums').on('value', (s) => {
-    const data = s.val();
+// --- THAY THẾ ĐOẠN LẮNG NGHE ALBUM CŨ (PHẦN 2) ---
+database.ref('albums').on('value', (snapshot) => {
+    const data = snapshot.val();
     const container = document.getElementById('albumContainer');
     if (!container) return;
-    if (!data) { container.innerHTML = "<p style='color:white;'>Chưa có album.</p>"; return; }
+
+    if (!data) {
+        container.innerHTML = "<p style='color:white; text-align:center; width:100%;'>Chưa có album kỷ niệm nào.</p>";
+        return;
+    }
+
+    const list = Object.keys(data).map(key => ({ id: key, ...data[key] }));
     
-    const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+    // Vẽ giao diện Album (Có nút xóa và khu vực bấm để mở chi tiết)
     container.innerHTML = list.map(a => `
-        <div class="album-card" style="margin:10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; display:inline-block; width:250px; position:relative;">
-            <span onclick="deleteData('albums/${a.id}')" style="position:absolute; top:5px; right:10px; color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
+        <div class="album-card" style="margin:10px; background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; display:inline-block; width:250px; position:relative; cursor:pointer;">
+            <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:5px; right:10px; color:rgba(255,255,255,0.6); font-size:22px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
             
-            <img src="${a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover;">
-            <h4 style="color:#ffcc00; margin:5px 0;">${a.title}</h4>
-            <p style="color:#ccc; font-size:12px;">${a.date}</p>
+            <div onclick="openAlbumDetail('${a.id}')">
+                <img src="${a.cover || a.img}" style="width:100%; border-radius:5px; height:150px; object-fit:cover; border: 2px solid #555;">
+                // Tìm đoạn innerHTML của album và thêm dòng p dưới đây
+            <h4 style="color:#ffcc00; margin:5px 0; text-align:center;">${a.title}</h4>
+            <p style="color:#fff; font-size:11px; text-align:center; margin:0;">👤 Người đăng: ${a.author || 'Ẩn danh'}</p>
+            <p style="color:#ccc; font-size:11px; text-align:center; margin:0;">📅 ${a.date}</p>
+            </div>
         </div>
     `).reverse().join('');
 });
@@ -101,140 +113,77 @@ function addMember() {
     r.readAsDataURL(file);
 }
 
-function addAlbum() {
-    const title = document.getElementById('inputTitle').value;
+async function addAlbum() {
+    // 1. Lấy dữ liệu từ các ô nhập
+    const title = document.getElementById('inputTitle').value.trim();
+    const author = document.getElementById('inputAuthor').value.trim(); // Lấy tên từ ô mới tạo
+    const author = document.getElementById('inputAuthor') ? document.getElementById('inputAuthor').value.trim() : ""; // Kiểm tra nếu ô Người đăng tồn tại
     const date = document.getElementById('inputDate').value;
-    const file = document.getElementById('inputImage').files[0];
-    if (!file) return alert("Chọn ảnh album!");
-    const r = new FileReader();
-    r.onload = (e) => {
-        database.ref('albums').push({ title, date, img: e.target.result })
-        .then(() => { alert("Đã tạo Album!"); document.getElementById('modalCreateAlbum').style.display='none'; });
-    };
-    r.readAsDataURL(file);
-}
+    const fileInput = document.getElementById('inputImage');
+    const files = fileInput.files;
 
-function addJersey() {
-    const file = document.getElementById('jerseyImgInput').files[0];
-    if (!file) return alert("Chọn ảnh áo!");
-    const r = new FileReader();
-    r.onload = (e) => {
-        database.ref('jerseys').push({ img: e.target.result })
-        .then(() => { alert("Đã up áo!"); document.getElementById('jerseyUploadArea').style.display='none'; });
-    };
-    r.readAsDataURL(file);
-}
-// Hàm lưu Video (Dán dưới addJersey)
-function addVideoLink() {
-    const input = document.getElementById('inputVideoLink');
-    const link = input.value.trim();
-    if (!link) return alert("Hãy dán link Youtube vào!");
-    
-    database.ref('videos').push({ 
-        url: link,
-        timestamp: Date.now() 
-    })
-    .then(() => {
-        alert("Đã thêm Video thành công!");
-        document.getElementById('modalVideoLink').style.display = 'none';
-        input.value = ""; // Xóa trống ô nhập
-    }).catch(err => alert("Lỗi: " + err.message));
-}
-// ==========================================
-// 4. HÀM GIAO DIỆN (MỞ/ĐÓNG)
-// ==========================================
-function showTab(t) {
-    if (t === 'thanh-vien') {
-        document.getElementById('main-content').style.display = 'none';
-        document.querySelector('.top-banner').style.display = 'none';
-        document.querySelector('.main-heading').style.display = 'none';
-        document.getElementById('thanh-vien-page').style.display = 'block';
+    // Kiểm tra thêm điều kiện người đăng
+    if (!title || !author || !date || files.length === 0) {
+        return alert("Vui lòng nhập đầy đủ Tiêu đề, Người đăng, Ngày và Ảnh!");
     }
-}
-function goBackHome() { location.reload(); }
-function toggleAddMemberForm() {
-    const f = document.getElementById('addMemberForm');
-    f.style.display = (f.style.display === 'none') ? 'block' : 'none';
-}
-function openAlbumModal() { document.getElementById('modalCreateAlbum').style.display = 'block'; }
-function openJerseyUpload() {
-    const a = document.getElementById('jerseyUploadArea');
-    a.style.display = (a.style.display === 'none' || a.style.display === '') ? 'block' : 'none';
-}
-function deleteData(path) {
-    if(confirm("Xóa?") && prompt("Pass:") === "HGF2026") database.ref(path).remove();
-}
-// Đóng modal
-if(document.getElementById('btnCloseModal')){
-    document.getElementById('btnCloseModal').onclick = () => document.getElementById('modalCreateAlbum').style.display='none';
-}
-// Hàm mở bảng thêm Video
-function openVideoModal() {
-    const modal = document.getElementById('modalVideoLink');
-    if (modal) modal.style.display = 'block';
-}
-// Hàm mở bảng thêm video
-function openVideoModal() {
-    const modal = document.getElementById('modalVideoLink');
-    if (modal) {
-        modal.style.display = 'block';
-    } else {
-        alert("Lỗi: Không tìm thấy bảng thêm video!");
-    }
-}
+    // 2. Kiểm tra điều kiện (Nếu thiếu sẽ báo Alert và dừng lại)
+    if (!title) return alert("Bạn chưa nhập Tiêu đề Album!");
+    if (!author) return alert("Bạn chưa nhập Tên người đăng!");
+    if (!date) return alert("Bạn chưa chọn Ngày tháng!");
+    if (files.length === 0) return alert("Bạn chưa chọn ảnh nào!");
 
-// Hàm gửi link video lên Firebase
-function addVideoLink() {
-    const input = document.getElementById('inputVideoLink');
-    const link = input.value.trim();
-    
-    if (!link) {
-        alert("Bạn chưa dán link video mà!");
-        return;
-    }
+    const btn = document.querySelector("#modalCreateAlbum .btn-submit");
+    // 3. Hiển thị trạng thái đang xử lý
+    const btn = document.querySelector("#modalCreateAlbum .btn-submit") || document.querySelector("#modalCreateAlbum button[onclick='addAlbum()']");
+    const originalText = btn.innerText;
+    btn.innerText = "Đang xử lý...";
+    btn.innerText = `⏳ Đang tải ${files.length} ảnh...`;
+    btn.disabled = true;
 
-    database.ref('videos').push({
-        url: link,
-        timestamp: Date.now()
-    }).then(() => {
-        alert("Đã thêm video thành công!");
-        document.getElementById('modalVideoLink').style.display = 'none';
-        input.value = ""; // Xóa trống ô nhập
-    }).catch((error) => {
-        alert("Lỗi khi lưu: " + error.message);
-    });
-}
-// 1. Hàm đóng/mở Menu
-function toggleMenu() {
-    // Tìm cái Menu dựa trên ID (Đảm bảo trong HTML bạn có <div id="sideMenu">)
-    const menu = document.getElementById("sideMenu");
-    if (menu) {
-        menu.classList.toggle("active");
-    } else {
-        console.error("Lỗi: Không tìm thấy phần tử có ID là 'sideMenu' trong HTML");
-        // Nếu không tìm thấy sideMenu, hãy thử tìm class side-menu
-        const menuByClass = document.querySelector(".side-menu");
-        if(menuByClass) menuByClass.classList.toggle("active");
-    }
-}
+    try {
+        const photoPromises = [];
+        // Chuyển đổi tất cả ảnh sang dạng dữ liệu
+        for (let i = 0; i < files.length; i++) {
+            photoPromises.push(fileToDataURL(files[i]));
+            photoPromises.push(new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(files[i]);
+            }));
+        }
 
-// 2. Hàm chuyển Tab (Thành viên / Trang chủ)
-function showTab(tabName) {
-    const mainContent = document.getElementById("main-content");
-    const thanhVienPage = document.getElementById("thanh-vien-page");
-    const banner = document.querySelector('.top-banner');
-    const heading = document.querySelector('.main-heading');
+        const allPhotos = await Promise.all(photoPromises);
 
-    if (tabName === 'thanh-vien') {
-        if(mainContent) mainContent.style.display = "none";
-        if(banner) banner.style.display = "none";
-        if(heading) heading.style.display = "none";
-        if(thanhVienPage) thanhVienPage.style.display = "block";
-    } else {
-        if(mainContent) mainContent.style.display = "block";
-        if(banner) banner.style.display = "block";
-        if(heading) heading.style.display = "block";
-        if(thanhVienPage) thanhVienPage.style.display = "none";
-    }
-    toggleMenu(); // Đóng menu sau khi chọn
-}
+        // Đẩy lên Firebase kèm thông tin người đăng
+        // 4. Đẩy lên Firebase (Lưu cả mảng ảnh và Người đăng)
+        await database.ref('albums').push({
+            title: title,
+            author: author, // Lưu tên người đăng vào database
+            author: author, // Lưu tên người đăng
+            date: date,
+            cover: allPhotos[0],
+            photos: allPhotos,
+            cover: allPhotos[0], // Lấy ảnh đầu làm đại diện
+            photos: allPhotos,   // Danh sách tất cả ảnh
+            timestamp: Date.now()
+        });
+
+        alert(`Thành công! Album đã được đăng bởi ${author}`);
+        alert(`✅ Thành công! Đã tạo Album '${title}' (Đăng bởi: ${author})`);
+        
+        // Reset form và đóng modal
+        // 5. Reset và đóng bảng
+        document.getElementById('inputTitle').value = "";
+        document.getElementById('inputAuthor').value = ""; // Xóa trắng ô sau khi xong
+        document.getElementById('inputImage').value = "";
+        if(document.getElementById('inputAuthor')) document.getElementById('inputAuthor').value = "";
+        document.getElementById('inputDate').value = "";
+        fileInput.value = "";
+        document.getElementById('modalCreateAlbum').style.display = 'none';
+
+    } catch (error) {
+        alert("Lỗi: " + error.message);
+        alert("❌ Lỗi hệ thống: " + error.message);
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;

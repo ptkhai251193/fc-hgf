@@ -3,147 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FC HGF - Đội Bóng Gia Đình</title>
+    <title>Thư Viện Ảnh Kỷ Niệm FC HGF</title>
+    <link rel="stylesheet" href="style-layout.css">
+    <link rel="stylesheet" href="style-modal.css">
     <style>
-        /* Dán toàn bộ nội dung layout.css của bạn vào đây */
-        body { background-color: #f8f9fa; font-family: Arial, sans-serif; margin: 0; }
-        .top-banner img { width: 100%; height: auto; display: block; }
-        .main-heading { background-color: #eda4e2; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; }
-        
-        /* Menu Style */
-        .side-menu { position: fixed; top: 0; left: -250px; width: 250px; height: 100%; background: #fff; z-index: 1000; transition: 0.3s; box-shadow: 2px 0 10px rgba(0,0,0,0.2); padding: 20px; }
-        .side-menu.active { left: 0; }
-        .menu-icon { cursor: pointer; display: flex; flex-direction: column; gap: 5px; width: 35px; }
-        .menu-icon span { height: 5px; background: #000; border-radius: 3px; }
-        .menu-list { list-style: none; padding: 0; }
-        .menu-list li { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-weight: bold; }
-        
-        /* Album & Grid */
-        .content-area { padding: 20px; max-width: 1200px; margin: auto; }
-        .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .album-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; }
-        .album-preview { width: 100%; height: 200px; object-fit: cover; }
-        
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; overflow-y: auto; }
-        .modal-content { background: white; margin: 5% auto; padding: 20px; width: 90%; max-width: 800px; border-radius: 10px; }
-        #photoViewer { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; }
-        #photoViewer img { max-width: 90%; max-height: 90%; border: 2px solid white; }
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+
+        .title-member {
+            color: #FFD700; 
+            text-align: center;
+            font-size: 35px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.9);
+            font-family: 'Arial', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #thanh-vien-page {
+            background-image: url('blackground.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        #thanh-vien-page::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); 
+            z-index: -1;
+        }
+
+        body:has(#thanh-vien-page[style*="display: block"]) .top-banner,
+        body:has(#thanh-vien-page[style*="display: block"]) .main-heading,
+        body:has(#thanh-vien-page[style*="display: block"]) #main-content {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
+    <div id="sidebar" style="display: none; position: fixed; top: 0; left: 0; width: 280px; height: 100%; background: white; z-index: 5000; padding: 0; box-shadow: 5px 0 15px rgba(0,0,0,0.1); transition: 0.3s; border-right: 1px solid #eee;">
+    
+    <div style="background: #FFB6C1; padding: 30px 20px; text-align: center; position: relative;">
+        <span onclick="toggleMenu()" style="position: absolute; top: 10px; right: 15px; font-size: 25px; cursor: pointer; color: #555;">&times;</span>
+        <h3 style="color: white; margin: 0; font-size: 20px; letter-spacing: 1px;">DANH MỤC</h3>
+    </div>
 
-    <div id="sideMenu" class="side-menu">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>DANH MỤC</h3>
-            <span onclick="toggleMenu()" style="font-size:30px; cursor:pointer;">&times;</span>
-        </div>
-        <ul class="menu-list">
-            <li onclick="goBackHome()">🏠 Trang Chủ</li>
-            <li onclick="showTab('thanh-vien')">⚽ Thành Viên</li>
-            <li>👕 Áo Đấu</li>
+    <ul style="list-style: none; padding: 20px 0; margin: 0;">
+        <li style="padding: 15px 25px; border-bottom: 1px solid #f9f9f9;">
+            <a href="#" onclick="goBackHome(); toggleMenu();" style="color: #333; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
+                <span>🏠</span> Trang chủ
+            </a>
+        </li>
+        <li style="padding: 15px 25px; border-bottom: 1px solid #f9f9f9;">
+            <a href="#" onclick="showTab('thanh-vien'); toggleMenu();" style="color: #333; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
+                <span>👥</span> Thành viên
+            </a>
+        </li>
         </ul>
+
+    <div style="position: absolute; bottom: 30px; width: 100%; text-align: center;">
+        <button onclick="toggleMenu()" style="background: #f5f5f5; color: #888; border: 1px solid #ddd; padding: 8px 30px; border-radius: 20px; cursor: pointer; font-size: 13px;">Đóng Menu</button>
     </div>
-
-    <div class="top-banner"><img src="https://lh3.googleusercontent.com/d/1Xy_JkXv_E_y_z_y_z_y_z_y_z_y_z_y_z=s1600" alt="Banner"></div>
-    <div class="main-heading">
-        <div class="menu-icon" onclick="toggleMenu()"><span></span><span></span><span></span></div>
-        <div style="text-align:center; flex:1;">
-            <h1 style="margin:0; font-size:24px;">FC.HGF</h1>
-            <p style="margin:0; font-style:italic;">Nơi đam mê rực cháy</p>
-        </div>
-        <button onclick="openAlbumModal()" style="padding:10px; background:#27ae60; color:white; border:none; border-radius:5px;">+ Album</button>
-    </div>
-
-    <div id="main-content" class="content-area">
-        <div class="album-grid" id="albumContainer">
-            </div>
-    </div>
-
-    <div id="thanh-vien-page" class="content-area" style="display:none;">
-        <h2>DANH SÁCH THÀNH VIÊN</h2>
-        <button onclick="goBackHome()">Quay lại</button>
-        <div id="memberGrid" class="album-grid"></div>
-    </div>
-
-    <div id="modalAlbumDetail" class="modal">
-        <div class="modal-content">
-            <span onclick="closeDetail()" style="float:right; cursor:pointer; font-size:25px;">&times;</span>
-            <h2 id="detailTitle">Tên Album</h2>
-            <div id="photoGrid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;"></div>
-        </div>
-    </div>
-
-    <div id="photoViewer" onclick="this.style.display='none'"><img id="fullPhoto" src=""></div>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <script>
-        // 1. Cấu hình Firebase (Dùng đúng thông tin bạn đã gửi)
-        const firebaseConfig = {
-            apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
-            authDomain: "fc-hgf.firebaseapp.com",
-            databaseURL: "https://fc-hgf-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "fc-hgf",
-            storageBucket: "fc-hgf.firebasestorage.app",
-            messagingSenderId: "1057951855896",
-            appId: "1:1057951855896:web:6a50e64266f8ebaf339a6d"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // 2. Hàm Menu
-        function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); }
-        function goBackHome() { 
-            document.getElementById('main-content').style.display = 'block';
-            document.getElementById('thanh-vien-page').style.display = 'none';
-            toggleMenu();
-        }
-        function showTab(tab) {
-            if(tab === 'thanh-vien') {
-                document.getElementById('main-content').style.display = 'none';
-                document.getElementById('thanh-vien-page').style.display = 'block';
-            }
-            toggleMenu();
-        }
-
-        // 3. Lắng nghe Album từ Firebase
-        database.ref('albums').on('value', (s) => {
-            const data = s.val();
-            const container = document.getElementById('albumContainer');
-            if(!data) { container.innerHTML = "Trống"; return; }
-            const list = Object.keys(data).map(k => ({ id: k, ...data[k] }));
-            container.innerHTML = list.map(a => `
-                <div class="album-card" onclick="openAlbum('${a.id}', '${a.title}')">
-                    <img src="${a.img}" class="album-preview">
-                    <div style="padding:15px;"><h3>${a.title}</h3><p>${a.date || ''}</p></div>
+</div>
+    <div id="thanh-vien-page" class="sub-page" style="display: none;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="title-member">THÀNH VIÊN HGF</h2>
+                <div class="button-group">
+                    <button class="add-btn" style="background: #0ae307;" onclick="toggleAddMemberForm()">+ Thêm Thành Viên</button>
+                    <button class="add-btn" onclick="goBackHome()">← Quay lại</button>
                 </div>
-            `).reverse().join('');
-        });
+            </div>
+            <div id="addMemberForm" class="member-form" style="display: none; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                <h3 style="color: white;">Thông Tin Cầu Thủ Mới</h3>
+                <div class="form-grid">
+                    <input type="text" id="memName" placeholder="Họ và tên">
+                    <input type="number" id="memNumber" placeholder="Số áo">
+                    <input type="file" id="memImg" accept="image/*">
+                </div>
+                <button class="save-btn" onclick="addMember()" style="margin-top: 10px;">Lưu Thành Viên</button>
+            </div>
+            <div id="memberGrid" class="member-grid"></div>
+        </div>
+    </div>
 
-        // 4. Mở chi tiết Album
-        function openAlbum(id, title) {
-            document.getElementById('detailTitle').innerText = title;
-            const grid = document.getElementById('photoGrid');
-            grid.innerHTML = "Đang tải...";
-            document.getElementById('modalAlbumDetail').style.display = 'block';
+    <div class="top-banner">
+        <img src="hinhnen.jpg" alt="Banner">
+    </div>
+
+    <header class="main-heading" style="background: rgba(229, 202, 206, 0.8); padding: 15px 0;">
+        <div class="container-header" style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: start; gap: 20px; padding: 0 15px;">
             
-            // Lấy ảnh của album này
-            database.ref('albums/' + id + '/photos').on('value', (s) => {
-                const photos = s.val();
-                if(!photos) { grid.innerHTML = "Chưa có ảnh chi tiết."; return; }
-                const photoList = Object.values(photos);
-                grid.innerHTML = photoList.map(p => `<img src="${p}" style="width:100%; height:100px; object-fit:cover; cursor:pointer;" onclick="viewPhoto('${p}')">`).join('');
-            });
-        }
+            <div class="menu-icon" onclick="toggleMenu()" style="cursor:pointer; font-size: 35px; color: black;">☰</div>
+            
+            <div class="header-logo">
+                <img src="logo.png" alt="Logo FC.HGF" style="width: 100px; height: 100px; object-fit: contain; display: block;">
+            </div>
 
-        function viewPhoto(src) {
-            document.getElementById('fullPhoto').src = src;
-            document.getElementById('photoViewer').style.display = 'flex';
-        }
+            </div>
+    </header>
 
-        function closeDetail() { document.getElementById('modalAlbumDetail').style.display = 'none'; }
-    </script>
-</body>
-</html>
+    <div id="marquee-container" style="background: #fff; overflow: hidden; white-space: nowrap; padding: 12px 0; border-bottom: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%;">
+        <marquee behavior="scroll" direction="left" scrollamount="7" onmouseover="this.stop();" onmouseout="this.start();" style="color: #333; font-style: italic; font-size: 15px; font-weight: 600; font-family: 'Times New Roman', serif; display: block;">
+            "Nơi lưu giữ những bước chạy, những bàn thắng và tinh thần đồng đội bất diệt. Mỗi tấm hình là một câu chuyện, mỗi album là một hành trình."
+        </marquee>
+    </div>
+<style>
+/* Hiệu ứng chạy từ phải sang trái */
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); } /* Chạy hết một nửa độ dài để lặp lại mượt mà */
+}
+</style>
+
+    <div id="main-content">
+        <main class="content-area" style="padding: 20px;">
+            <div class="section-header-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-label" style="color: #FFD700; font-weight: bold;">ÁO ĐẤU</div>
+                <button class="btn-create-small" onclick="openJerseyUpload()">+ Thêm Áo</button>
+            </div>
+            <div id="jerseyUploadArea" style="display: none; margin: 15px 0; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                <input type="file" id="jerseyImgInput" accept="image/*" style="color: white;">
+                <button onclick="addJersey()" style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Xác nhận</button>
+            </div>
+            <div id="jerseyContainer" class="jersey-grid"></div>
+
+            <hr style="border: 0.5px solid rgba(255,255,255,0.2); margin: 30px 0;">
+
+            <div class="section-header-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-label" style="color: #FFD700; font-weight: bold;">ALBUM KỶ NIỆM</div>
+                <button class="btn-create-small" onclick="openAlbumModal()">Tạo Album</button>
+            </div>
+            <div id="albumContainer" class="album-grid"></div>
+
+            <hr style="border: 0.5px solid rgba(255,255,255,0.2); margin: 30px 0;">
+
+            <div class="section-header-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="section-label" style="color: #FFD700; font-weight: bold;">VIDEOS KỶ NIỆM</div>
+                <button class="btn-create-small" onclick="openVideoModal()">+ Thêm Video</button>
+            </div>
+            <div id="videoContainer" class="album-grid" style="margin-top: 20px;"></div>
+
+        </main>
+    </div>
+
+    <div id="modalCreateAlbum" class="modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+        <div class="modal-content" style="background: #222; width: 90%; max-width: 400px; margin: 50px auto; padding: 20px; border-radius: 10px; color: white;">
+            <span onclick="document.getElementById('modalCreateAlbum').style.display='none'" style="float:right; cursor:pointer;">&times;</span>
+            <h3>Thêm Album Mới</h3>
+<input type="text" id="inputTitle" placeholder="Tiêu đề" style="width: 100%; margin: 10px 0; padding: 8px;">
+<input type="date" id="inputDate" style="width: 100%; margin: 10px 0; padding: 8px;">
+            <h3 style="color: white; margin-bottom: 15px;">Thêm Album Mới</h3>
+
+<input type="text" id="inputTitle" placeholder="Tiêu đề album" style="width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 6px; border: none; background: #fff; color: #333; font-size: 15px;">
+
+<input type="text" id="inputAuthor" placeholder="Tên người đăng (Vd: Manager, Admin...)" style="width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 6px; border: none; background: #fff; color: #333; font-size: 15px;">
+
+<input type="date" id="inputDate" style="width: 100%; margin-bottom: 12px; padding: 12px; border-radius: 6px; border: none; background: #fff; color: #333; font-size: 15px;">
+
+<input type="file" id="inputImage" accept="image/*" multiple style="width: 100%; margin: 10px 0; color: white;">
+<p style="color: #aaa; font-size: 11px; margin-top: -5px;">* Mẹo: Giữ phím Ctrl (máy tính) hoặc nhấn giữ ảnh (điện thoại) để chọn nhiều tấm.</p>
