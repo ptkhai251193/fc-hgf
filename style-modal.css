@@ -108,3 +108,41 @@ hr {
     border-top: 1px solid #eee;
     margin-bottom: 20px;
 }
+/* Tút lại bảng Thêm Album trong style-layout.css */
+#modalCreateAlbum .modal-content {
+    display: flex;
+    flex-direction: column; /* Ép các ô phải nằm dọc xuống */
+    gap: 15px; /* Tạo khoảng cách đều giữa các ô */
+    padding: 30px;
+    background-color: #1a1a1a;
+    border-radius: 15px;
+}
+
+/* Định dạng chung cho các ô nhập liệu để không bị dính lẹo */
+#modalCreateAlbum input[type="text"],
+#modalCreateAlbum input[type="date"],
+#modalCreateAlbum input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #2d2d2d;
+    color: white;
+    font-size: 14px;
+}
+
+/* Nút Đăng Album cho nổi bật */
+#modalCreateAlbum .btn-submit {
+    background-color: #0088cc;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#modalCreateAlbum .btn-submit:hover {
+    background-color: #0055aa;
+}
