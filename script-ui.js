@@ -46,18 +46,24 @@ database.ref('albums').on('value', (snapshot) => {
     
     // Vẽ giao diện Album (Có nút xóa và khu vực bấm để mở chi tiết)
     container.innerHTML = list.map(a => `
-    <div class="album-card" onclick="openAlbumDetail('${a.id}')">
+    <div class="album-card" onclick="openAlbumDetail('${a.id}')" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding: 15px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); border-radius: 15px; margin: 10px; width: 280px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
         
-        <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:10px; right:15px; color:rgba(0,0,0,0.5); font-size:25px; cursor:pointer; font-weight:bold; z-index:10;">&times;</span>
+        <span onclick="event.stopPropagation(); deleteData('albums/${a.id}')" style="position:absolute; top:10px; right:12px; color:#999; font-size:22px; cursor:pointer;">&times;</span>
         
-        <img src="${a.cover || a.img}" style="width:100%; border-radius:10px; height:180px; object-fit:cover; border: 1px solid rgba(255,255,255,0.2);">
+        <img src="${a.cover || a.img}" style="width:100%; height:180px; object-fit:cover; border-radius: 10px; margin-bottom: 12px;">
         
-        <h4 style="color:#D4A017; margin:10px 0; text-align:center; font-size: 18px; font-weight: bold;">${a.title}</h4>
+        <h4 style="color: #D4A017; margin: 0 0 8px 0; font-size: 19px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            ${a.title}
+        </h4>
         
-        <div style="display: flex; justify-content: space-around; font-size: 13px; color: #555;">
-            <p style="margin: 0;">👤 ${a.author || 'Phan Trọng Khải'}</p>
-            <p style="margin: 0;">📅 ${a.date}</p>
+        <div style="color: #555; font-size: 14px; margin-bottom: 6px; width: 100%;">
+            <span style="color: #6a5acd;">👤</span> Người đăng: <strong>${a.author || 'Không rõ'}</strong>
         </div>
+        
+        <div style="color: #777; font-size: 13px; width: 100%;">
+            <span style="color: #ff69b4;">📅</span> Ngày: ${a.date}
+        </div>
+
     </div>
 `).reverse().join('');
 });
