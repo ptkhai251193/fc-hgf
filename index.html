@@ -7,43 +7,86 @@
     <link rel="stylesheet" href="style-layout.css">
     <link rel="stylesheet" href="style-modal.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+       /* --- PHẦN CSS TỔNG HỢP CHO TRANG THÀNH VIÊN --- */
+#thanh-vien-page .container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-        .title-member {
-            color: #FFD700; 
-            text-align: center;
-            font-size: 35px;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 30px;
-            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.9);
-            font-family: 'Arial', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+/* 1. Dàn hàng ngang cho thành viên: 2 cột trên điện thoại, 4-5 cột trên máy tính */
+.member-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+    gap: 15px;
+    padding: 10px;
+    margin-top: 20px;
+}
 
-        #thanh-vien-page {
-            background-image: url('blackground.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-        }
+/* 2. Hiệu ứng thẻ thành viên */
+.member-card {
+    transition: transform 0.3s ease, background 0.3s ease;
+    border: 1px solid rgba(255, 215, 0, 0.2) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
 
-        #thanh-vien-page::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5); 
-            z-index: -1;
-        }
+.member-card:hover {
+    transform: translateY(-8px); /* Bay nhẹ lên */
+    background: rgba(255,255,255,0.2) !important;
+    border-color: #FFD700 !important;
+}
 
-        body:has(#thanh-vien-page[style*="display: block"]) .top-banner,
-        body:has(#thanh-vien-page[style*="display: block"]) .main-heading,
-        body:has(#thanh-vien-page[style*="display: block"]) #main-content {
-            display: none !important;
-        }
+/* 3. SỬA LỖI TÊN XUỐNG DÒNG */
+.member-card h3 {
+    width: 100% !important;
+    white-space: nowrap !important; /* Không cho xuống dòng */
+    overflow: hidden !important;    /* Ẩn chữ dư */
+    text-overflow: ellipsis !important; /* Hiện dấu ... */
+    text-align: center !important;
+    text-transform: capitalize;    /* Tự viết hoa chữ cái đầu */
+}
+
+/* 4. Chỉnh ảnh đại diện tròn trịa */
+.member-card img {
+    border: 3px solid #FFD700;
+    transition: transform 0.3s ease;
+}
+
+.member-card:hover img {
+    transform: scale(1.05);
+}
+
+/* 5. Định dạng ngày sinh cho đẹp */
+.member-card p {
+    margin: 2px 0 !important;
+}
+/* --- BỔ SUNG ĐỂ TRANG THÀNH VIÊN HIỆN RÕ NỀN --- */
+#thanh-vien-page {
+    background-image: url('blackground.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+    z-index: 10;
+}
+
+/* Lớp phủ đen mờ để nổi bật thẻ cầu thủ */
+#thanh-vien-page::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7); 
+    z-index: -1;
+}
+
+/* Ẩn các phần khác khi đang ở trang thành viên */
+body:has(#thanh-vien-page[style*="display: block"]) .top-banner,
+body:has(#thanh-vien-page[style*="display: block"]) .main-heading,
+body:has(#thanh-vien-page[style*="display: block"]) #main-content,
+body:has(#thanh-vien-page[style*="display: block"]) #marquee-container {
+    display: none !important;
+}
     </style>
 </head>
 <body>
