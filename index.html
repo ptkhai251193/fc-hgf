@@ -125,9 +125,9 @@
     <div id="main-content">
         <main class="content-area" style="padding: 20px;">
             <div class="section-header-group" style="display: flex; justify-content: space-between; align-items: center;">
-                <div class="section-label" style="color: #FFD700; font-weight: bold;">ÁO ĐẤU</div>
-                <button class="btn-create-small" onclick="openJerseyModal()">+ Thêm Áo</button>
-            </div>
+    <div class="section-label" style="color: #FFD700; font-weight: bold;">ÁO ĐẤU</div>
+    <button class="btn-create-small" onclick="openJerseyModal()">+ Thêm Áo</button>
+</div>
             <div id="jerseyUploadArea" style="display: none; margin: 15px 0; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
                 <input type="file" id="jerseyImgInput" accept="image/*" style="color: white;">
                 <button onclick="addJersey()" style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Xác nhận</button>
@@ -152,19 +152,20 @@
 
         </main>
     </div>
-<div id="modalJersey" class="modal" style="display: none;">
-    <div class="modal-content" style="background: white; border: 2px solid #0088cc; border-radius: 15px;">
-        <span class="close-btn" onclick="document.getElementById('modalJersey').style.display='none'">&times;</span>
+<div id="modalJersey" class="modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);">
+    <div class="modal-content" style="background: white; border: 2px solid #0088cc; border-radius: 15px; width: 90%; max-width: 400px; margin: 15% auto; padding: 20px; position: relative;">
+        <span class="close-btn" onclick="document.getElementById('modalJersey').style.display='none'" style="position: absolute; right: 20px; top: 10px; font-size: 30px; cursor: pointer;">&times;</span>
+        
         <h2 style="color: #333; margin-bottom: 20px; text-align: center;">Thêm Mẫu Áo Mới</h2>
         
-        <div class="input-group" style="margin-bottom: 20px;">
+        <div style="margin-bottom: 20px;">
             <label style="color: #555; display: block; margin-bottom: 10px;">Chọn hình ảnh áo đấu:</label>
             <input type="file" id="inputJerseyFile" accept="image/*" style="width: 100%;">
         </div>
 
-        <button class="btn-submit" onclick="handleJerseyUpload()" 
+        <button onclick="handleJerseyUpload()" 
                 style="width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">
-            XÁC NHẬN LƯU
+            XÁC NHẬN LƯU LÊN HỆ THỐNG
         </button>
     </div>
 </div>
