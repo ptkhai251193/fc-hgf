@@ -296,35 +296,32 @@ database.ref('members').on('value', (snapshot) => {
     });
 });
 
-// Hàm lưu Thành viên mới lên Firebase
 function addMember() {
     const name = document.getElementById('memName').value;
     const number = document.getElementById('memNumber').value;
-    const birth = document.getElementById('memBirth').value; // Lấy ngày sinh từ ô nhập
+    const birth = document.getElementById('memBirth').value; // <-- PHẢI CÓ DÒNG NÀY
     const file = document.getElementById('memImg').files[0];
 
-    if (!file || !name) return alert("Anh Manager ơi, nhập tên và chọn ảnh đã nhé!");
+    if (!file || !name) return alert("Anh Khải ơi, nhập tên và chọn ảnh đã nhé!");
 
     const reader = new FileReader();
     reader.onload = (e) => {
         database.ref('members').push({
             name: name,
             number: number,
-            birth: birth, // <--- Dòng này cực kỳ quan trọng
+            birth: birth, // <-- VÀ PHẢI CÓ DÒNG NÀY ĐỂ ĐẨY LÊN MẠNG
             img: e.target.result,
             timestamp: Date.now()
         }).then(() => {
             alert("Đã thêm thành viên thành công!");
-            // Xóa trắng ô nhập sau khi thêm
             document.getElementById('memName').value = "";
             document.getElementById('memNumber').value = "";
-            document.getElementById('memBirth').value = "";
+            document.getElementById('memBirth').value = ""; // Xóa trắng ô ngày sinh
             toggleAddMemberForm();
         });
     };
     reader.readAsDataURL(file);
 }
-
 // Hàm xóa Thành viên trên Firebase
 function deleteMemberFirebase(id) {
     if (prompt("Nhập mật khẩu quản trị để xóa thành viên:") === "HGF2026") {
