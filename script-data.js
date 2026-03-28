@@ -254,32 +254,43 @@ function handleJerseyUpload() {
 database.ref('members').on('value', (snapshot) => {
     const grid = document.getElementById('memberGrid');
     if (!grid) return;
-    grid.innerHTML = '';
-    
+    grid.innerHTML = ''; 
     const data = snapshot.val();
-    if (!data) {
-        grid.innerHTML = "<p style='color:yellow; text-align:center; width:100%;'>Chưa có thành viên nào anh ơi!</p>";
-        return;
-    }
+    if (!data) return;
 
     Object.keys(data).forEach((key) => {
         const m = data[key];
-        // Định dạng ngày sinh sang DD/MM/YYYY cho dễ nhìn
+        
+        // 1. Xử lý tên: Viết hoa chữ cái đầu cho gọn
+        const nameShow = m.name ? m.name.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ') : "";
+        
+        // 2. QUAN TRỌNG: Xử lý hiển thị Ngày sinh
+        // Nếu lúc thêm anh để trống ngày sinh, nó sẽ hiện "Chưa cập nhật"
         const birthShow = m.birth ? new Date(m.birth).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
         
         const div = document.createElement('div');
         div.className = 'member-card';
-        // Hiệu ứng nhấn vào thẻ để xem ảnh đại diện (dùng hàm viewPhoto có sẵn của anh)
-        div.onclick = () => { if(typeof viewPhoto === "function") viewPhoto(m.img); };
+        
+        // 3. QUAN TRỌNG: Lệnh click để mở ảnh đại diện to lên
+        div.onclick = function() { 
+            if(typeof viewPhoto === "function") {
+                viewPhoto(m.img); 
+            } else {
+                // Nếu chưa có hàm viewPhoto, dùng tạm lệnh này
+                document.getElementById('fullPhoto').src = m.img;
+                document.getElementById('photoViewer').style.display = 'flex';
+            }
+        };
         
         div.style = "position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center; cursor:pointer;";
         
         div.innerHTML = `
-            <button onclick="event.stopPropagation(); deleteMemberFirebase('${key}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
+            <button onclick="event.stopPropagation(); deleteData('members/${key}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
             <img src="${m.img}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #FFD700; margin-bottom:10px;">
-            <h3 style="color:white; margin:5px 0;">${m.name}</h3>
-            <p style="color:#FFD700; font-weight:bold; margin:0;">Số áo: ${m.number}</p>
-            <p style="color:#ccc; font-size:12px; margin-top:5px;">🎂 ${birthShow}</p>
+            <h3 title="${nameShow}" style="color:white; margin:5px 0 3px 0; font-size:18px;">${nameShow}</h3>
+            <p style="color:#FFD700; font-weight:bold; margin:0; font-size:14px;">Số áo: ${m.number}</p>
+            
+            <p style="color:#ccc; font-size:12px; margin-top:5px; font-style:italic;">🎂 ${birthShow}</p>
         `;
         grid.appendChild(div);
     });
