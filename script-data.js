@@ -246,3 +246,86 @@ function handleJerseyUpload() {
     };
     reader.readAsDataURL(file);
 }
+// ==========================================================
+// 5. PHẦN QUẢN LÝ THÀNH VIÊN (FIREBASE)
+// ==========================================================
+
+// Tự động lắng nghe và hiển thị Thành viên từ Firebase
+database.ref('members').on('value', (snapshot) => {
+    const grid = document.getElementById('memberGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    
+    const data = snapshot.val();
+    if (!data) {
+        grid.innerHTML = "<p style='color:yellow; text-align:center; width:100%;'>Chưa có thành viên nào anh ơi!</p>";
+        return;
+    }
+
+    Object.keys(data).forEach((key) => {
+        const m = data[key];
+        // Định dạng ngày sinh sang DD/MM/YYYY cho dễ nhìn
+        const birthShow = m.birth ? new Date(m.birth).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
+        
+        const div = document.createElement('div');
+        div.className = 'member-card';
+        // Hiệu ứng nhấn vào thẻ để xem ảnh đại diện (dùng hàm viewPhoto có sẵn của anh)
+        div.onclick = () => { if(typeof viewPhoto === "function") viewPhoto(m.img); };
+        
+        div.style = "position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center; cursor:pointer;";
+        
+        div.innerHTML = `
+            <button onclick="event.stopPropagation(); deleteMemberFirebase('${key}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
+            <img src="${m.img}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #FFD700; margin-bottom:10px;">
+            <h3 style="color:white; margin:5px 0;">${m.name}</h3>
+            <p style="color:#FFD700; font-weight:bold; margin:0;">Số áo: ${m.number}</p>
+            <p style="color:#ccc; font-size:12px; margin-top:5px;">🎂 ${birthShow}</p>
+        `;
+        grid.appendChild(div);
+    });
+});
+
+// Hàm lưu Thành viên mới lên Firebase
+function addMember() {
+    const name = document.getElementById('memName').value;
+    const number = document.getElementById('memNumber').value;
+    const birth = document.getElementById('memBirth').value; // Lấy từ ô input date mới
+    const fileInput = document.getElementById('memImg');
+    const file = fileInput.files[0];
+
+    if (!name || !file) {
+        alert("Anh Manager vui lòng nhập tên và chọn ảnh đại diện nhé!");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        database.ref('members').push({
+            name: name,
+            number: number,
+            birth: birth,
+            img: e.target.result,
+            timestamp: Date.now()
+        }).then(() => {
+            alert("Đã thêm thành viên " + name + " thành công!");
+            // Xóa trắng form và đóng lại
+            document.getElementById('memName').value = "";
+            document.getElementById('memNumber').value = "";
+            document.getElementById('memBirth').value = "";
+            fileInput.value = "";
+            if(typeof toggleAddMemberForm === "function") toggleAddMemberForm();
+        });
+    };
+    reader.readAsDataURL(file);
+}
+
+// Hàm xóa Thành viên trên Firebase
+function deleteMemberFirebase(id) {
+    if (prompt("Nhập mật khẩu quản trị để xóa thành viên:") === "HGF2026") {
+        database.ref('members/' + id).remove().then(() => {
+            alert("Đã xóa thành viên khỏi hệ thống!");
+        });
+    } else {
+        alert("Mật khẩu không đúng!");
+    }
+}
