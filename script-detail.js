@@ -69,24 +69,35 @@ function compressDetailImage(file, callback) {
     };
 }
 
-// Sửa đoạn xử lý khi chọn thêm ảnh (Dòng 66 trong file của bạn)
-document.getElementById('inputAddPhotos').addEventListener('change', function(e) {
-    const files = e.target.files;
-    
-    // Lấy ID của Album đang mở trên Firebase (giả sử bạn lưu id vào currentAlbumId)
-    const albumId = currentAlbumId; 
+// Kiểm tra xem nút có tồn tại không rồi mới gắn lệnh
+const addPhotosInput = document.getElementById('inputAddPhotos');
 
-    Array.from(files).forEach(file => {
-        compressDetailImage(file, function(compressedBase64) {
-            // ĐẨY THẲNG LÊN FIREBASE ĐỂ MỌI NGƯỜI CÙNG THẤY
-            database.ref(`albums/${albumId}/photos`).push(compressedBase64)
-            .then(() => {
-                console.log("Đã đồng bộ ảnh lên đám mây!");
-            })
-            .catch(err => alert("Lỗi đồng bộ: " + err.message));
+if (addPhotosInput) {
+    addPhotosInput.addEventListener('change', function(e) {
+        const files = e.target.files;
+        
+        // Kiểm tra xem có đang mở album nào không
+        if (typeof currentAlbumId === 'undefined' || !currentAlbumId) {
+            alert("Chưa xác định được Album để thêm ảnh!");
+            return;
+        }
+
+        const albumId = currentAlbumId; 
+
+        Array.from(files).forEach(file => {
+            // Đảm bảo hàm compressDetailImage đã được định nghĩa ở trên hoặc file khác
+            if (typeof compressDetailImage === 'function') {
+                compressDetailImage(file, function(compressedBase64) {
+                    database.ref(`albums/${albumId}/photos`).push(compressedBase64)
+                    .then(() => {
+                        console.log("Đã đồng bộ ảnh lên Firebase!");
+                    })
+                    .catch(err => console.error("Lỗi đồng bộ: " + err.message));
+                });
+            }
         });
     });
-});
+}
 
 // Nút đóng bảng chi tiết
 document.getElementById('btnCloseDetail').onclick = () => {
