@@ -507,3 +507,34 @@ body {
     text-transform: uppercase; /* Cho chữ in hoa đồng bộ với tiêu đề */
     min-width: 120px; /* Đảm bảo độ rộng tối thiểu cho nút */
 }
+/* 1. Thiết lập khung chứa cho phép dàn hàng ngang và vuốt */
+.jersey-grid, .album-grid {
+    display: flex !important;          /* Ép các phần tử nằm trên một hàng */
+    overflow-x: auto !important;       /* Kích hoạt vuốt ngang khi bị tràn */
+    scroll-snap-type: x mandatory;     /* Hiệu ứng "hít": vuốt đến đâu dừng chuẩn đến đó */
+    gap: 15px;                         /* Khoảng cách giữa các tấm ảnh/album */
+    padding: 15px 5px;                 /* Tạo khoảng trống trên dưới cho đẹp */
+    scrollbar-width: none;             /* Ẩn thanh cuộn trên máy tính (Firefox) */
+    -ms-overflow-style: none;          /* Ẩn thanh cuộn (IE/Edge) */
+    -webkit-overflow-scrolling: touch; /* Giúp vuốt trên iPhone mượt hơn */
+}
+
+/* 2. Ẩn thanh cuộn để nhìn chuyên nghiệp như App */
+.jersey-grid::-webkit-scrollbar, 
+.album-grid::-webkit-scrollbar {
+    display: none;                     /* Ẩn thanh cuộn trên Chrome/Safari/Điện thoại */
+}
+
+/* 3. Định hình lại kích thước các ô bên trong để vuốt đẹp */
+.jersey-item, .album-card {
+    flex: 0 0 75%;                     /* Quan trọng: Mỗi ô chiếm 75% chiều rộng màn hình */
+    max-width: 300px;                  /* Giới hạn độ rộng tối đa để không bị quá to trên máy tính */
+    scroll-snap-align: center;         /* Khi vuốt xong, ô đó sẽ nhảy vào giữa màn hình */
+    margin: 0 !important;              /* Xóa bỏ khoảng cách cũ để dùng Gap ở trên */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Thêm chút bóng cho nổi bật */
+}
+
+/* 4. Chỉnh riêng cho Video để không bị méo */
+#videoContainer iframe {
+    border-radius: 10px;
+}
