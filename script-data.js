@@ -206,3 +206,43 @@ function goBackHome() {
 }
 function closeTab() { document.getElementById("tabContentOverlay").style.display = "none"; }
 function openJerseyModal() { document.getElementById('modalJersey').style.display = 'block'; }
+// Hàm 1: Mở cái bảng (Modal) khi bấm nút "Thêm Áo"
+function openJerseyModal() {
+    const modal = document.getElementById('modalJersey');
+    if (modal) {
+        modal.style.display = 'block';
+    } else {
+        alert("Không tìm thấy bảng modalJersey trong HTML anh ơi!");
+    }
+}
+
+// Hàm 2: Xử lý khi anh bấm nút "Xác nhận" trong cái bảng đó
+// Anh hãy kiểm tra nút "Xác nhận" trong HTML có onclick="handleJerseyUpload()" chưa nhé
+function handleJerseyUpload() {
+    const fileInput = document.getElementById('inputJerseyFile');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Anh Manager ơi, vui lòng chọn một tấm ảnh áo đấu đã nhé!");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const jerseyData = event.target.result;
+        
+        // Gửi lên mạng (Firebase)
+        database.ref('jerseys').push({
+            img: jerseyData,
+            timestamp: Date.now()
+        }).then(() => {
+            // Dọn dẹp sau khi xong
+            fileInput.value = ""; 
+            document.getElementById('modalJersey').style.display = 'none';
+            alert("Đã đồng bộ mẫu áo lên hệ thống rồi anh nhé!");
+        }).catch((error) => {
+            alert("Lỗi rồi anh: " + error.message);
+        });
+    };
+    reader.readAsDataURL(file);
+}
