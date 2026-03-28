@@ -1,20 +1,19 @@
 // ==========================================================
 // 1. CẤU HÌNH FIREBASE (BẮT BUỘC Ở ĐẦU FILE)
 // ==========================================================
-const firebaseConfig = {
-    apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
-    authDomain: "fc-hgf.firebaseapp.com",
-    databaseURL: "https://fc-hgf-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "fc-hgf",
-    storageBucket: "fc-hgf.firebasestorage.app",
-    messagingSenderId: "1057951855896",
-    appId: "1:1057951855896:web:6a50e64266f8ebaf339a6d"
-};
-
 if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+    var hgfConfig = {
+        apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
+        authDomain: "fc-hgf.firebaseapp.com",
+        databaseURL: "https://fc-hgf-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "fc-hgf",
+        storageBucket: "fc-hgf.firebasestorage.app",
+        messagingSenderId: "1057951855896",
+        appId: "1:1057951855896:web:6a50e64266f8ebaf339a6d"
+    };
+    firebase.initializeApp(hgfConfig);
 }
-const database = firebase.database();
+var database = firebase.database();
 
 const form = document.getElementById('albumForm');
 const container = document.getElementById('albumContainer');
@@ -250,7 +249,7 @@ function handleJerseyUpload() {
 // 5. PHẦN QUẢN LÝ THÀNH VIÊN (FIREBASE)
 // ==========================================================
 
-// Tự động lắng nghe và hiển thị Thành viên từ Firebase
+// --- LẮNG NGHE THÀNH VIÊN (HIỆN NGÀY SINH & MỞ ẢNH) ---
 database.ref('members').on('value', (snapshot) => {
     const grid = document.getElementById('memberGrid');
     if (!grid) return;
@@ -261,35 +260,32 @@ database.ref('members').on('value', (snapshot) => {
     Object.keys(data).forEach((key) => {
         const m = data[key];
         
-        // 1. Xử lý tên: Viết hoa chữ cái đầu cho gọn
+        // 1. Định dạng lại tên cho gọn (Viết hoa chữ cái đầu)
         const nameShow = m.name ? m.name.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ') : "";
         
-        // 2. QUAN TRỌNG: Xử lý hiển thị Ngày sinh
-        // Nếu lúc thêm anh để trống ngày sinh, nó sẽ hiện "Chưa cập nhật"
+        // 2. Định dạng Ngày sinh (DD/MM/YYYY)
         const birthShow = m.birth ? new Date(m.birth).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
         
         const div = document.createElement('div');
         div.className = 'member-card';
         
-        // 3. QUAN TRỌNG: Lệnh click để mở ảnh đại diện to lên
+        // 3. LỆNH MỞ ẢNH KHI NHẤN VÀO THẺ (Gọi hàm viewPhoto đã có của anh)
         div.onclick = function() { 
             if(typeof viewPhoto === "function") {
                 viewPhoto(m.img); 
             } else {
-                // Nếu chưa có hàm viewPhoto, dùng tạm lệnh này
                 document.getElementById('fullPhoto').src = m.img;
                 document.getElementById('photoViewer').style.display = 'flex';
             }
         };
         
-        div.style = "position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center; cursor:pointer;";
+        div.style = "position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center; cursor:pointer; border: 1px solid rgba(255,215,0,0.2);";
         
         div.innerHTML = `
             <button onclick="event.stopPropagation(); deleteData('members/${key}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
             <img src="${m.img}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #FFD700; margin-bottom:10px;">
-            <h3 title="${nameShow}" style="color:white; margin:5px 0 3px 0; font-size:18px;">${nameShow}</h3>
+            <h3 style="color:white; margin:5px 0; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${nameShow}">${nameShow}</h3>
             <p style="color:#FFD700; font-weight:bold; margin:0; font-size:14px;">Số áo: ${m.number}</p>
-            
             <p style="color:#ccc; font-size:12px; margin-top:5px; font-style:italic;">🎂 ${birthShow}</p>
         `;
         grid.appendChild(div);
