@@ -284,7 +284,7 @@ database.ref('members').on('value', (snapshot) => {
         div.style = "position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center; cursor:pointer; border: 1px solid rgba(255,215,0,0.2); transition: 0.3s;";
         
         div.innerHTML = `
-            <button onclick="event.stopPropagation(); deleteData('members/${key}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
+            <button onclick="event.stopPropagation(); askDelete('members/${key}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
             <img src="${m.img}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #FFD700; margin-bottom:10px;">
             <h3 style="color:white; margin:5px 0; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${nameShow}</h3>
             <p style="color:#FFD700; font-weight:bold; margin:0; font-size:14px;">Số áo: ${m.number}</p>
@@ -322,15 +322,44 @@ function addMember() {
     reader.readAsDataURL(file);
 }
 // Hàm xóa Thành viên trên Firebase
-function deleteMemberFirebase(id) {
-    if (prompt("Nhập mật khẩu quản trị để xóa thành viên:") === "") {
-        database.ref('members/' + id).remove().then(() => {
-            alert("Đã xóa thành viên khỏi hệ thống!");
-        });
+let deletePathGlobal = ''; 
+
+// 1. Hàm mở bảng nhập mật khẩu
+function askDelete(path) {
+    deletePathGlobal = path;
+    const modal = document.getElementById('passwordModal');
+    if(modal) {
+        modal.style.display = 'flex';
+        document.getElementById('adminPasswordInput').value = ''; 
+        document.getElementById('adminPasswordInput').focus();
     } else {
-        alert("Mật khẩu không đúng!");
+        alert("Anh Khải ơi, anh chưa thêm bảng passwordModal vào file index.html rồi!");
     }
 }
+
+// 2. Xử lý khi bấm nút XÓA trên bảng mật khẩu
+// Đoạn này anh có thể để trong script-data.js hoặc script-ui.js đều được
+const confirmBtn = document.getElementById('confirmDeleteBtn');
+if(confirmBtn) {
+    confirmBtn.onclick = function() {
+        const pass = document.getElementById('adminPasswordInput').value;
+        if (pass === "HGF2026") { 
+            database.ref(deletePathGlobal).remove()
+                .then(() => {
+                    alert("Đã xóa thành công!");
+                    document.getElementById('passwordModal').style.display = 'none';
+                })
+                .catch(err => alert("Lỗi: " + err.message));
+        } else {
+            alert("Mật khẩu sai rồi anh ơi!");
+        }
+    };
+}
+
+// 3. Các hàm xóa cũ gọi sang hàm bảo mật mới
+function deleteMemberFirebase(id) { askDelete('members/' + id); }
+function deleteJersey(id) { askDelete('jerseys/' + id); }
+function deleteAlbum(id) { askDelete('albums/' + id); }
 function viewPhoto(src) {
     const viewer = document.getElementById('photoViewer');
     const fullImg = document.getElementById('fullPhoto');
