@@ -37,7 +37,7 @@ database.ref('jerseys').on('value', (snapshot) => {
             div.className = 'jersey-item';
             div.innerHTML = `
                 <img src="${imgSrc}" style="width: 100%; border-radius: 10px;">
-                <button onclick="deleteJerseyFirebase('${key}')" style="margin-top:10px; color:red; border:none; background:none; cursor:pointer; font-size:11px;">Xóa</button>
+                <button onclick="askDelete('jerseys/${key}')" class="btn-delete">Xóa</button>
             `;
             jerseyContainer.appendChild(div);
         });
