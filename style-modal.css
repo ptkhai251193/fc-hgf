@@ -114,7 +114,7 @@ hr {
     flex-direction: column; /* Ép các ô phải nằm dọc xuống */
     gap: 15px; /* Tạo khoảng cách đều giữa các ô */
     padding: 30px;
-    background-color: #1a1a1a;
+    background-color: #f6efef;
     border-radius: 15px;
 }
 

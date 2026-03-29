@@ -1,17 +1,20 @@
+// ==========================================================
 // 1. CẤU HÌNH FIREBASE (BẮT BUỘC Ở ĐẦU FILE)
 // ==========================================================
+const firebaseConfig = {
+    apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
+    authDomain: "fc-hgf.firebaseapp.com",
+    databaseURL: "https://fc-hgf-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "fc-hgf",
+    storageBucket: "fc-hgf.firebasestorage.app",
+    messagingSenderId: "1057951855896",
+    appId: "1:1057951855896:web:6a50e64266f8ebaf339a6d"
+};
+
 if (!firebase.apps.length) {
-    var hgfConfig = {
-        apiKey: "AIzaSyB61v8FCk4pUVWY61W-35OBk_7mgEQWsBA",
-        authDomain: "fc-hgf.firebaseapp.com",
-        databaseURL: "https://fc-hgf-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "fc-hgf",
-        storageBucket: "fc-hgf.firebasestorage.app",
-        messagingSenderId: "1057951855896",
-        appId: "1:1057951855896:web:6a50e64266f8ebaf339a6d"
-    };
-    firebase.initializeApp(hgfConfig);
+    firebase.initializeApp(firebaseConfig);
 }
+const database = firebase.database();
 
 const form = document.getElementById('albumForm');
 const container = document.getElementById('albumContainer');
@@ -68,6 +71,17 @@ function handleJerseyUpload() {
     reader.readAsDataURL(file);
 }
 
+// Hàm xóa Áo đấu trên Firebase
+function deleteJerseyFirebase(id) {
+    const password = prompt("Xác nhận quyền quản trị: Nhập mật khẩu để xóa mẫu áo.");
+    if (password === "HGF2026") {
+        database.ref('jerseys/' + id).remove().then(() => {
+            alert("Đã xóa xong trên tất cả thiết bị!");
+        });
+    } else if (password !== null) {
+        alert("Mật khẩu sai!");
+    }
+}
 
 // ==========================================================
 // 3. PHẦN ALBUM & VIDEO (GIỮ LOGIC LOCALSTORAGE CỦA ANH)
@@ -101,13 +115,17 @@ function loadAlbums() {
             </div>
         `;
 
-        // THAY THẾ TOÀN BỘ ĐOẠN ONCLICK CŨ BẰNG ĐOẠN NÀY:
         div.querySelector('.btn-delete-album').onclick = (e) => {
-    e.stopPropagation();
-    // Gọi bảng trắng với mã định danh ALBUM_LOCAL
-    askDelete('ALBUM_LOCAL:' + index); 
-};
-        
+            e.stopPropagation();
+            const password = prompt("Xác nhận quyền quản trị: Vui lòng nhập mật khẩu để xóa album này.");
+            if (password === "HGF2026") {
+                if (confirm("Xóa vĩnh viễn album '" + album.title + "'?")) {
+                    albums.splice(index, 1);
+                    localStorage.setItem('myAlbums', JSON.stringify(albums));
+                    loadAlbums();
+                }
+            } else if (password !== null) alert("Sai mật khẩu!");
+        };
         container.appendChild(div);
     });
 }
@@ -149,15 +167,23 @@ function loadVideos() {
         div.className = 'album-card';
         const frameHeight = video.type === "tiktok" ? "480px" : "250px";
         div.innerHTML = `
-    <iframe src="${video.src}" frameborder="0" allowfullscreen style="width: 100%; height: ${frameHeight}; border-radius: 15px 15px 0 0;"></iframe>
-    <div style="padding: 10px; text-align: center; background: #fff;">
-        <button onclick="askDelete('VIDEO_LOCAL:${index}')" class="btn-delete-album">Xóa Video</button>
-    </div>
-`;
+            <iframe src="${video.src}" frameborder="0" allowfullscreen style="width: 100%; height: ${frameHeight}; border-radius: 15px 15px 0 0;"></iframe>
+            <div style="padding: 10px; text-align: center; background: #fff;">
+                <button onclick="deleteVideo(${index})" class="btn-delete-album">Xóa Video</button>
+            </div>
+        `;
         vContainer.appendChild(div);
     });
 }
 
+function deleteVideo(index) {
+    if (prompt("Mật khẩu xóa Video:") === "HGF2026") {
+        let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
+        videos.splice(index, 1);
+        localStorage.setItem('myVideos', JSON.stringify(videos));
+        loadVideos();
+    }
+}
 
 // ==========================================================
 // 4. KHỞI CHẠY (INIT)
@@ -219,165 +245,4 @@ function handleJerseyUpload() {
         });
     };
     reader.readAsDataURL(file);
-}
-// ==========================================================
-// 5. PHẦN QUẢN LÝ THÀNH VIÊN (FIREBASE)
-// ==========================================================
-
-// --- LẮNG NGHE THÀNH VIÊN (HIỆN NGÀY SINH & MỞ ẢNH) ---
-// --- ĐOẠN NÀY LÀM NHIỆM VỤ VẼ THÀNH VIÊN RA MÀN HÌNH ---
-database.ref('members').on('value', (snapshot) => {
-    const grid = document.getElementById('memberGrid');
-    if (!grid) return;
-    grid.innerHTML = ''; 
-    const data = snapshot.val();
-    if (!data) return;
-
-    Object.keys(data).forEach((key) => {
-        const m = data[key];
-        
-        // 1. Xử lý tên cho đẹp (Viết hoa chữ cái đầu)
-        const nameShow = m.name ? m.name.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ') : "Cầu Thủ";
-        
-        // 2. Xử lý NGÀY SINH (Nếu có dữ liệu thì hiện, không thì báo Chưa cập nhật)
-        const birthShow = m.birth ? new Date(m.birth).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
-        
-        const div = document.createElement('div');
-        div.className = 'member-card';
-        
-        // 3. LỆNH QUAN TRỌNG: CLICK VÀO LÀ MỞ ẢNH TO
-        div.onclick = function() { 
-            const viewer = document.getElementById('photoViewer');
-            const fullImg = document.getElementById('fullPhoto');
-            if(viewer && fullImg) {
-                fullImg.src = m.img;
-                viewer.style.display = 'flex';
-            } else {
-                alert("Anh Khải ơi, trong file index.html thiếu ID photoViewer rồi!");
-            }
-        };
-        
-        // Giao diện thẻ thành viên
-        div.style = "position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center; cursor:pointer; border: 1px solid rgba(255,215,0,0.2); transition: 0.3s;";
-        
-        div.innerHTML = `
-            <button onclick="event.stopPropagation(); askDelete('members/${key}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; z-index:10;">×</button>
-            <img src="${m.img}" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #FFD700; margin-bottom:10px;">
-            <h3 style="color:white; margin:5px 0; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${nameShow}</h3>
-            <p style="color:#FFD700; font-weight:bold; margin:0; font-size:14px;">Số áo: ${m.number}</p>
-            
-            <p style="color:#00eeee; font-size:12px; margin-top:5px; font-weight:bold;">🎂 ${birthShow}</p>
-        `;
-        grid.appendChild(div);
-    });
-});
-
-function addMember() {
-    const name = document.getElementById('memName').value;
-    const number = document.getElementById('memNumber').value;
-    const birth = document.getElementById('memBirth').value; // Lấy ngày sinh từ HTML
-    const file = document.getElementById('memImg').files[0];
-
-    if (!file || !name) return alert("Anh Khải ơi, nhập tên và chọn ảnh đã nhé!");
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        database.ref('members').push({
-            name: name,
-            number: number,
-            birth: birth, // Đẩy ngày sinh lên Firebase
-            img: e.target.result,
-            timestamp: Date.now()
-        }).then(() => {
-            alert("Đã thêm thành viên thành công!");
-            document.getElementById('memName').value = "";
-            document.getElementById('memNumber').value = "";
-            document.getElementById('memBirth').value = "";
-            toggleAddMemberForm();
-        });
-    };
-    reader.readAsDataURL(file);
-}
-// Hàm xóa Thành viên trên Firebase
-// ==========================================================
-// 6. TRẠM ĐIỀU KHIỂN XÓA BẢO MẬT (DÙNG CHUNG)
-// ==========================================================
-
-let deletePathGlobal = ''; 
-
-// 1. Hàm mở bảng nhập mật khẩu (Dùng cho mọi nút xóa)
-function askDelete(path) {
-    deletePathGlobal = path;
-    const modal = document.getElementById('passwordModal');
-    if(modal) {
-        modal.style.display = 'flex';
-        // Đảm bảo ô nhập liệu trống và hiện chữ "Nhập mật khẩu"
-        const inputField = document.getElementById('adminPasswordInput');
-        inputField.value = ''; 
-        inputField.placeholder = "Nhập mật khẩu"; // Đổi nội dung ở đây
-        inputField.focus();
-    }
-}
-
-// 2. Lệnh xử lý khi bấm nút XÓA trên bảng mật khẩu
-// Tôi bao bọc trong DOMContentLoaded để đảm bảo nút xóa luôn hoạt động
-document.addEventListener('DOMContentLoaded', () => {
-    const confirmBtn = document.getElementById('confirmDeleteBtn');
-    if(confirmBtn) {
-        confirmBtn.onclick = function() {
-            const pass = document.getElementById('adminPasswordInput').value;
-            
-            if (pass === "HGF2026") { 
-    // TRƯỜNG HỢP 1: Xóa Áo đấu (Firebase)
-    if (deletePathGlobal.startsWith('jerseys/')) {
-        database.ref(deletePathGlobal).remove().then(() => {
-            alert("Đã xóa mẫu áo thành công!");
-            document.getElementById('passwordModal').style.display = 'none';
-        });
-    } 
-    // TRƯỜNG HỢP 2: Xóa Thành viên (Firebase)
-    else if (deletePathGlobal.startsWith('members/')) {
-        database.ref(deletePathGlobal).remove().then(() => {
-            alert("Đã xóa thành viên!");
-            document.getElementById('passwordModal').style.display = 'none';
-        });
-    }
-    // TRƯỜNG HỢP 3: Xóa Album (Local)
-    else if (deletePathGlobal.startsWith('ALBUM_LOCAL:')) {
-        const idx = deletePathGlobal.split(':')[1];
-        let albums = JSON.parse(localStorage.getItem('myAlbums')) || [];
-        albums.splice(parseInt(idx), 1);
-        localStorage.setItem('myAlbums', JSON.stringify(albums));
-        loadAlbums(); // Vẽ lại màn hình ngay
-        document.getElementById('passwordModal').style.display = 'none';
-        alert("Đã xóa Album!");
-    }
-    // TRƯỜNG HỢP 4: Xóa Video (Local)
-    else if (deletePathGlobal.startsWith('VIDEO_LOCAL:')) {
-        const idx = deletePathGlobal.split(':')[1];
-        let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
-        videos.splice(parseInt(idx), 1);
-        localStorage.setItem('myVideos', JSON.stringify(videos));
-        loadVideos(); // Vẽ lại màn hình ngay
-        document.getElementById('passwordModal').style.display = 'none';
-        alert("Đã xóa Video!");
-    }
-} else {
-                alert("Mật khẩu sai rồi anh Khải ơi!");
-            }
-        };
-    }
-});
-
-// 3. Các hàm bổ trợ
-function deleteMemberFirebase(id) { askDelete('members/' + id); }
-function deleteJersey(id) { askDelete('jerseys/' + id); }
-function deleteAlbum(id) { askDelete('albums/' + id); }
-function viewPhoto(src) {
-    const viewer = document.getElementById('photoViewer');
-    const fullImg = document.getElementById('fullPhoto');
-    if (viewer && fullImg) {
-        fullImg.src = src;
-        viewer.style.display = 'flex';
-    }
 }

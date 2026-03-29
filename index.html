@@ -7,86 +7,43 @@
     <link rel="stylesheet" href="style-layout.css">
     <link rel="stylesheet" href="style-modal.css">
     <style>
-       /* --- PHẦN CSS TỔNG HỢP CHO TRANG THÀNH VIÊN --- */
-#thanh-vien-page .container {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
 
-/* 1. Dàn hàng ngang cho thành viên: 2 cột trên điện thoại, 4-5 cột trên máy tính */
-.member-grid {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
-    gap: 15px;
-    padding: 10px;
-    margin-top: 20px;
-}
+        .title-member {
+            color: #FFD700; 
+            text-align: center;
+            font-size: 35px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.9);
+            font-family: 'Arial', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
 
-/* 2. Hiệu ứng thẻ thành viên */
-.member-card {
-    transition: transform 0.3s ease, background 0.3s ease;
-    border: 1px solid rgba(255, 215, 0, 0.2) !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
+        #thanh-vien-page {
+            background-image: url('blackground.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
 
-.member-card:hover {
-    transform: translateY(-8px); /* Bay nhẹ lên */
-    background: rgba(255,255,255,0.2) !important;
-    border-color: #FFD700 !important;
-}
+        #thanh-vien-page::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); 
+            z-index: -1;
+        }
 
-/* 3. SỬA LỖI TÊN XUỐNG DÒNG */
-.member-card h3 {
-    width: 100% !important;
-    white-space: nowrap !important; /* Không cho xuống dòng */
-    overflow: hidden !important;    /* Ẩn chữ dư */
-    text-overflow: ellipsis !important; /* Hiện dấu ... */
-    text-align: center !important;
-    text-transform: capitalize;    /* Tự viết hoa chữ cái đầu */
-}
-
-/* 4. Chỉnh ảnh đại diện tròn trịa */
-.member-card img {
-    border: 3px solid #FFD700;
-    transition: transform 0.3s ease;
-}
-
-.member-card:hover img {
-    transform: scale(1.05);
-}
-
-/* 5. Định dạng ngày sinh cho đẹp */
-.member-card p {
-    margin: 2px 0 !important;
-}
-/* --- BỔ SUNG ĐỂ TRANG THÀNH VIÊN HIỆN RÕ NỀN --- */
-#thanh-vien-page {
-    background-image: url('blackground.jpg'); 
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    min-height: 100vh;
-    position: relative;
-    z-index: 10;
-}
-
-/* Lớp phủ đen mờ để nổi bật thẻ cầu thủ */
-#thanh-vien-page::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.7); 
-    z-index: -1;
-}
-
-/* Ẩn các phần khác khi đang ở trang thành viên */
-body:has(#thanh-vien-page[style*="display: block"]) .top-banner,
-body:has(#thanh-vien-page[style*="display: block"]) .main-heading,
-body:has(#thanh-vien-page[style*="display: block"]) #main-content,
-body:has(#thanh-vien-page[style*="display: block"]) #marquee-container {
-    display: none !important;
-}
+        body:has(#thanh-vien-page[style*="display: block"]) .top-banner,
+        body:has(#thanh-vien-page[style*="display: block"]) .main-heading,
+        body:has(#thanh-vien-page[style*="display: block"]) #main-content {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -128,7 +85,6 @@ body:has(#thanh-vien-page[style*="display: block"]) #marquee-container {
                 <div class="form-grid">
                     <input type="text" id="memName" placeholder="Họ và tên">
                     <input type="number" id="memNumber" placeholder="Số áo">
-                    <input type="date" id="memBirth" style="padding: 8px; border-radius: 5px; border: none;">
                     <input type="file" id="memImg" accept="image/*">
                 </div>
                 <button class="save-btn" onclick="addMember()" style="margin-top: 10px;">Lưu Thành Viên</button>
@@ -247,28 +203,25 @@ body:has(#thanh-vien-page[style*="display: block"]) #marquee-container {
         </div>
     </div>
 
-   <div id="modalAlbumDetail" class="modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto;">
-    <div class="modal-content-large" style="background: white; width: 95%; max-width: 900px; margin: 20px auto; padding: 20px; border-radius: 12px; position: relative;">
-        <div class="detail-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <div class="detail-title-group">
-                <h2 id="detailTitle" style="margin: 0; color: #333;">Tên Album</h2>
-                <p id="detailInfo" style="margin: 5px 0; color: #777; font-size: 14px;"></p>
+    <div id="modalAlbumDetail" class="modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto;">
+        <div class="modal-content-large" style="background: white; width: 95%; max-width: 900px; margin: 20px auto; padding: 20px; border-radius: 12px; position: relative;">
+            <div class="detail-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div class="detail-title-group">
+                    <h2 id="detailTitle" style="margin: 0; color: #333;">Tên Album</h2>
+                    <p id="detailInfo" style="margin: 5px 0; color: #777; font-size: 14px;"></p>
+                </div>
+                <span class="close-btn" onclick="document.getElementById('modalAlbumDetail').style.display='none'" style="font-size: 30px; cursor: pointer; color: #333;">&times;</span>
             </div>
-            <span class="close-btn" onclick="document.getElementById('modalAlbumDetail').style.display='none'" style="font-size: 30px; cursor: pointer; color: #333;">&times;</span>
+            <hr style="border: 0.5px solid #eee;">
+            <div id="photoGrid" class="photo-grid">
+                </div>
         </div>
-        
-        <hr style="border: 0.5px solid #eee;">
-
-        <div style="margin: 15px 0; text-align: right; padding: 10px; background: #f9f9f9; border-radius: 8px;">
-            <label for="inputAddPhotos" style="background: #27ae60; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px;">
-                + THÊM ẢNH VÀO ALBUM NÀY
-            </label>
-            <input type="file" id="inputAddPhotos" accept="image/*" multiple style="display: none;">
-        </div>
-
-        <div id="photoGrid" class="photo-grid"></div>
     </div>
-</div>
+    
+
+    <div id="photoViewer" onclick="this.style.display='none'" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 3000; justify-content: center; align-items: center; cursor: zoom-out;">
+        <img id="fullPhoto" src="" style="max-width: 95%; max-height: 90%; border: 3px solid white; border-radius: 5px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+    </div>
 
     <footer style="text-align: center; padding: 30px; color: #888; font-size: 13px; background: #1a1a1a;">
         <p>© 2026 FC HGF - Long Xuyên, An Giang</p>
@@ -304,21 +257,5 @@ body:has(#thanh-vien-page[style*="display: block"]) #marquee-container {
             }
         }
     </script>
-    <div id="photoViewer" onclick="this.style.display='none'" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center; cursor: pointer;">
-    <div style="position: relative; max-width: 90%; max-height: 90%;">
-        <img id="fullPhoto" src="" style="max-width: 100%; max-height: 90vh; border: 5px solid white; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.2);">
-        <p style="color: white; text-align: center; margin-top: 10px; font-weight: bold;">Bấm bất kỳ đâu để đóng</p>
-    </div>
-</div>
-<div id="passwordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
-    <div style="background: white; padding: 25px; border-radius: 15px; width: 300px; text-align: center;">
-        <h3 style="margin-bottom: 15px; color: #333;">Xác nhận xóa</h3>
-        <input type="password" id="adminPasswordInput" placeholder="Nhập mật khẩu" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; text-align: center; font-size: 18px;">
-        <div style="display: flex; gap: 10px;">
-            <button onclick="document.getElementById('passwordModal').style.display='none'" style="flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer;">Hủy</button>
-            <button id="confirmDeleteBtn" style="flex: 1; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">XÓA</button>
-        </div>
-    </div>
-</div>
 </body>
 </html>
