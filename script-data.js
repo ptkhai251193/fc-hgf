@@ -112,17 +112,14 @@ function loadAlbums() {
             </div>
         `;
 
+        // THAY THẾ TOÀN BỘ ĐOẠN ONCLICK CŨ BẰNG ĐOẠN NÀY:
         div.querySelector('.btn-delete-album').onclick = (e) => {
             e.stopPropagation();
-            const password = prompt("Xác nhận quyền quản trị: Vui lòng nhập mật khẩu để xóa album này.");
-            if (password === "HGF2026") {
-                if (confirm("Xóa vĩnh viễn album '" + album.title + "'?")) {
-                    albums.splice(index, 1);
-                    localStorage.setItem('myAlbums', JSON.stringify(albums));
-                    loadAlbums();
-                }
-            } else if (password !== null) alert("Sai mật khẩu!");
+            // Gọi hàm mở bảng nhập mật khẩu bảo mật
+            // Tôi đặt tên là 'ALBUM_LOCAL' để máy phân biệt được đây là xóa Album trên máy
+            askDelete('ALBUM_LOCAL:' + index); 
         };
+        
         container.appendChild(div);
     });
 }
@@ -164,11 +161,11 @@ function loadVideos() {
         div.className = 'album-card';
         const frameHeight = video.type === "tiktok" ? "480px" : "250px";
         div.innerHTML = `
-            <iframe src="${video.src}" frameborder="0" allowfullscreen style="width: 100%; height: ${frameHeight}; border-radius: 15px 15px 0 0;"></iframe>
-            <div style="padding: 10px; text-align: center; background: #fff;">
-                <button onclick="deleteVideo(${index})" class="btn-delete-album">Xóa Video</button>
-            </div>
-        `;
+    <iframe src="${video.src}" frameborder="0" allowfullscreen style="width: 100%; height: ${frameHeight}; border-radius: 15px 15px 0 0;"></iframe>
+    <div style="padding: 10px; text-align: center; background: #fff;">
+        <button onclick="askDelete('VIDEO_LOCAL:${index}')" class="btn-delete-album">Xóa Video</button>
+    </div>
+`;
         vContainer.appendChild(div);
     });
 }
@@ -322,9 +319,13 @@ function addMember() {
     reader.readAsDataURL(file);
 }
 // Hàm xóa Thành viên trên Firebase
+// ==========================================================
+// 6. TRẠM ĐIỀU KHIỂN XÓA BẢO MẬT (DÙNG CHUNG)
+// ==========================================================
+
 let deletePathGlobal = ''; 
 
-// 1. Hàm mở bảng nhập mật khẩu
+// 1. Hàm mở bảng nhập mật khẩu (Dùng cho mọi nút xóa)
 function askDelete(path) {
     deletePathGlobal = path;
     const modal = document.getElementById('passwordModal');
@@ -337,26 +338,54 @@ function askDelete(path) {
     }
 }
 
-// 2. Xử lý khi bấm nút XÓA trên bảng mật khẩu
-// Đoạn này anh có thể để trong script-data.js hoặc script-ui.js đều được
-const confirmBtn = document.getElementById('confirmDeleteBtn');
-if(confirmBtn) {
-    confirmBtn.onclick = function() {
-        const pass = document.getElementById('adminPasswordInput').value;
-        if (pass === "HGF2026") { 
-            database.ref(deletePathGlobal).remove()
-                .then(() => {
-                    alert("Đã xóa thành công!");
+// 2. Lệnh xử lý khi bấm nút XÓA trên bảng mật khẩu
+// Tôi bao bọc trong DOMContentLoaded để đảm bảo nút xóa luôn hoạt động
+document.addEventListener('DOMContentLoaded', () => {
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    if(confirmBtn) {
+        confirmBtn.onclick = function() {
+            const pass = document.getElementById('adminPasswordInput').value;
+            
+            if (pass === "HGF2026") { 
+                
+                // TRƯỜNG HỢP 1: Xóa Firebase (Thành viên / Áo đấu)
+                if (!deletePathGlobal.includes('_LOCAL')) {
+                    database.ref(deletePathGlobal).remove().then(() => {
+                        alert("Đã xóa trên hệ thống mạng!");
+                        document.getElementById('passwordModal').style.display = 'none';
+                    });
+                } 
+                
+                // TRƯỜNG HỢP 2: Xóa Album (Máy này)
+                else if (deletePathGlobal.startsWith('ALBUM_LOCAL:')) {
+                    const idx = deletePathGlobal.split(':')[1];
+                    let albums = JSON.parse(localStorage.getItem('myAlbums')) || [];
+                    albums.splice(idx, 1);
+                    localStorage.setItem('myAlbums', JSON.stringify(albums));
+                    if (typeof loadAlbums === 'function') loadAlbums(); 
                     document.getElementById('passwordModal').style.display = 'none';
-                })
-                .catch(err => alert("Lỗi: " + err.message));
-        } else {
-            alert("Mật khẩu sai rồi anh ơi!");
-        }
-    };
-}
+                    alert("Đã xóa Album thành công!");
+                }
 
-// 3. Các hàm xóa cũ gọi sang hàm bảo mật mới
+                // TRƯỜNG HỢP 3: Xóa Video (Máy này)
+                else if (deletePathGlobal.startsWith('VIDEO_LOCAL:')) {
+                    const idx = deletePathGlobal.split(':')[1];
+                    let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
+                    videos.splice(idx, 1);
+                    localStorage.setItem('myVideos', JSON.stringify(videos));
+                    if (typeof loadVideos === 'function') loadVideos();
+                    document.getElementById('passwordModal').style.display = 'none';
+                    alert("Đã xóa Video thành công!");
+                }
+
+            } else {
+                alert("Mật khẩu sai rồi anh Khải ơi!");
+            }
+        };
+    }
+});
+
+// 3. Các hàm bổ trợ
 function deleteMemberFirebase(id) { askDelete('members/' + id); }
 function deleteJersey(id) { askDelete('jerseys/' + id); }
 function deleteAlbum(id) { askDelete('albums/' + id); }
@@ -365,8 +394,6 @@ function viewPhoto(src) {
     const fullImg = document.getElementById('fullPhoto');
     if (viewer && fullImg) {
         fullImg.src = src;
-        viewer.style.display = 'flex'; // Hiện khung xem ảnh
-    } else {
-        alert("Lỗi: Không tìm thấy khung xem ảnh (photoViewer) trong HTML!");
+        viewer.style.display = 'flex';
     }
 }
