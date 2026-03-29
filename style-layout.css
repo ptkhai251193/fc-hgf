@@ -379,7 +379,7 @@ body {
 
 /* --- ĐIỀU CHỈNH NỀN TOÀN TRANG (BODY) --- */
 body {
-    background-color: #f8f9fa !important; /* Màu xám trắng rất nhẹ để làm nổi bật các khối màu trắng */
+    background-color: #f51818 !important; /* Màu xám trắng rất nhẹ để làm nổi bật các khối màu trắng */
 }
 /* Nút 3 gạch */
 .menu-container { margin-right: 15px; position: relative; }
@@ -496,7 +496,7 @@ body {
 /* Nút Xóa cầu thủ */
 .delete-mem-btn {
     position: absolute; top: 10px; right: 10px;
-    background: rgba(255, 0, 0, 0.7); color: white;
+    background: rgba(150, 147, 147, 0.7); color: white;
     border: none; border-radius: 50%; width: 25px; height: 25px;
     cursor: pointer; display: none;
 }
