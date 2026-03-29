@@ -338,32 +338,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 } 
                 
                 // TRƯỜNG HỢP 2: Xóa Album (Máy này)
-else if (deletePathGlobal.startsWith('ALBUM_LOCAL:')) {
-    const idx = deletePathGlobal.split(':')[1];
-    let albums = JSON.parse(localStorage.getItem('myAlbums')) || [];
-    albums.splice(idx, 1);
-    localStorage.setItem('myAlbums', JSON.stringify(albums));
-    
-    // DÒNG QUAN TRỌNG: Gọi hàm này để xóa hình trên màn hình ngay lập tức
-    loadAlbums(); 
-    
-    document.getElementById('passwordModal').style.display = 'none';
-    alert("Đã xóa Album thành công!");
-}
+                else if (deletePathGlobal.startsWith('ALBUM_LOCAL:')) {
+                    const idx = deletePathGlobal.split(':')[1];
+                    let albums = JSON.parse(localStorage.getItem('myAlbums')) || [];
+                    albums.splice(idx, 1);
+                    localStorage.setItem('myAlbums', JSON.stringify(albums));
+                    if (typeof loadAlbums === 'function') loadAlbums(); 
+                    document.getElementById('passwordModal').style.display = 'none';
+                    alert("Đã xóa Album thành công!");
+                }
 
-// TRƯỜNG HỢP 3: Xóa Video (Máy này)
-else if (deletePathGlobal.startsWith('VIDEO_LOCAL:')) {
-    const idx = deletePathGlobal.split(':')[1];
-    let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
-    videos.splice(idx, 1);
-    localStorage.setItem('myVideos', JSON.stringify(videos));
-    
-    // DÒNG QUAN TRỌNG: Gọi hàm này để xóa video trên màn hình ngay lập tức
-    loadVideos(); 
-    
-    document.getElementById('passwordModal').style.display = 'none';
-    alert("Đã xóa Video thành công!");
-}
+                // TRƯỜNG HỢP 3: Xóa Video (Máy này)
+                else if (deletePathGlobal.startsWith('VIDEO_LOCAL:')) {
+                    const idx = deletePathGlobal.split(':')[1];
+                    let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
+                    videos.splice(idx, 1);
+                    localStorage.setItem('myVideos', JSON.stringify(videos));
+                    if (typeof loadVideos === 'function') loadVideos();
+                    document.getElementById('passwordModal').style.display = 'none';
+                    alert("Đã xóa Video thành công!");
+                }
 
             } else {
                 alert("Mật khẩu sai rồi anh Khải ơi!");
