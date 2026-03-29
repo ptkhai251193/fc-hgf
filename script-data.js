@@ -299,7 +299,7 @@ database.ref('members').on('value', (snapshot) => {
 function addMember() {
     const name = document.getElementById('memName').value;
     const number = document.getElementById('memNumber').value;
-    const birth = document.getElementById('memBirth').value; // <-- PHẢI CÓ DÒNG NÀY
+    const birth = document.getElementById('memBirth').value; // Lấy ngày sinh từ HTML
     const file = document.getElementById('memImg').files[0];
 
     if (!file || !name) return alert("Anh Khải ơi, nhập tên và chọn ảnh đã nhé!");
@@ -309,14 +309,14 @@ function addMember() {
         database.ref('members').push({
             name: name,
             number: number,
-            birth: birth, // <-- VÀ PHẢI CÓ DÒNG NÀY ĐỂ ĐẨY LÊN MẠNG
+            birth: birth, // Đẩy ngày sinh lên Firebase
             img: e.target.result,
             timestamp: Date.now()
         }).then(() => {
             alert("Đã thêm thành viên thành công!");
             document.getElementById('memName').value = "";
             document.getElementById('memNumber').value = "";
-            document.getElementById('memBirth').value = ""; // Xóa trắng ô ngày sinh
+            document.getElementById('memBirth').value = "";
             toggleAddMemberForm();
         });
     };
