@@ -328,38 +328,41 @@ document.addEventListener('DOMContentLoaded', () => {
             const pass = document.getElementById('adminPasswordInput').value;
             
             if (pass === "HGF2026") { 
-                
-                // TRƯỜNG HỢP 1: Xóa Firebase (Thành viên / Áo đấu)
-                if (!deletePathGlobal.includes('_LOCAL')) {
-                    database.ref(deletePathGlobal).remove().then(() => {
-                        alert("Đã xóa trên hệ thống mạng!");
-                        document.getElementById('passwordModal').style.display = 'none';
-                    });
-                } 
-                
-                // TRƯỜNG HỢP 2: Xóa Album (Máy này)
-                else if (deletePathGlobal.startsWith('ALBUM_LOCAL:')) {
-                    const idx = deletePathGlobal.split(':')[1];
-                    let albums = JSON.parse(localStorage.getItem('myAlbums')) || [];
-                    albums.splice(idx, 1);
-                    localStorage.setItem('myAlbums', JSON.stringify(albums));
-                    if (typeof loadAlbums === 'function') loadAlbums(); 
-                    document.getElementById('passwordModal').style.display = 'none';
-                    alert("Đã xóa Album thành công!");
-                }
-
-                // TRƯỜNG HỢP 3: Xóa Video (Máy này)
-                else if (deletePathGlobal.startsWith('VIDEO_LOCAL:')) {
-                    const idx = deletePathGlobal.split(':')[1];
-                    let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
-                    videos.splice(idx, 1);
-                    localStorage.setItem('myVideos', JSON.stringify(videos));
-                    if (typeof loadVideos === 'function') loadVideos();
-                    document.getElementById('passwordModal').style.display = 'none';
-                    alert("Đã xóa Video thành công!");
-                }
-
-            } else {
+    // TRƯỜNG HỢP 1: Xóa Áo đấu (Firebase)
+    if (deletePathGlobal.startsWith('jerseys/')) {
+        database.ref(deletePathGlobal).remove().then(() => {
+            alert("Đã xóa mẫu áo thành công!");
+            document.getElementById('passwordModal').style.display = 'none';
+        });
+    } 
+    // TRƯỜNG HỢP 2: Xóa Thành viên (Firebase)
+    else if (deletePathGlobal.startsWith('members/')) {
+        database.ref(deletePathGlobal).remove().then(() => {
+            alert("Đã xóa thành viên!");
+            document.getElementById('passwordModal').style.display = 'none';
+        });
+    }
+    // TRƯỜNG HỢP 3: Xóa Album (Local)
+    else if (deletePathGlobal.startsWith('ALBUM_LOCAL:')) {
+        const idx = deletePathGlobal.split(':')[1];
+        let albums = JSON.parse(localStorage.getItem('myAlbums')) || [];
+        albums.splice(parseInt(idx), 1);
+        localStorage.setItem('myAlbums', JSON.stringify(albums));
+        loadAlbums(); // Vẽ lại màn hình ngay
+        document.getElementById('passwordModal').style.display = 'none';
+        alert("Đã xóa Album!");
+    }
+    // TRƯỜNG HỢP 4: Xóa Video (Local)
+    else if (deletePathGlobal.startsWith('VIDEO_LOCAL:')) {
+        const idx = deletePathGlobal.split(':')[1];
+        let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
+        videos.splice(parseInt(idx), 1);
+        localStorage.setItem('myVideos', JSON.stringify(videos));
+        loadVideos(); // Vẽ lại màn hình ngay
+        document.getElementById('passwordModal').style.display = 'none';
+        alert("Đã xóa Video!");
+    }
+} else {
                 alert("Mật khẩu sai rồi anh Khải ơi!");
             }
         };
