@@ -68,17 +68,6 @@ function handleJerseyUpload() {
     reader.readAsDataURL(file);
 }
 
-// Hàm xóa Áo đấu trên Firebase
-function deleteJerseyFirebase(id) {
-    const password = prompt("Xác nhận quyền quản trị: Nhập mật khẩu để xóa mẫu áo.");
-    if (password === "HGF2026") {
-        database.ref('jerseys/' + id).remove().then(() => {
-            alert("Đã xóa xong trên tất cả thiết bị!");
-        });
-    } else if (password !== null) {
-        alert("Mật khẩu sai!");
-    }
-}
 
 // ==========================================================
 // 3. PHẦN ALBUM & VIDEO (GIỮ LOGIC LOCALSTORAGE CỦA ANH)
@@ -115,7 +104,7 @@ function loadAlbums() {
         // THAY THẾ TOÀN BỘ ĐOẠN ONCLICK CŨ BẰNG ĐOẠN NÀY:
         div.querySelector('.btn-delete-album').onclick = (e) => {
     e.stopPropagation();
-    // Thay prompt bằng hàm askDelete của mình
+    // Gọi bảng trắng với mã định danh ALBUM_LOCAL
     askDelete('ALBUM_LOCAL:' + index); 
 };
         
