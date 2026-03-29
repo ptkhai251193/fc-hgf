@@ -379,7 +379,7 @@ body {
 
 /* --- ĐIỀU CHỈNH NỀN TOÀN TRANG (BODY) --- */
 body {
-    background-color: #f51818 !important; /* Màu xám trắng rất nhẹ để làm nổi bật các khối màu trắng */
+    background-color: #ffffff !important; /* Màu xám trắng rất nhẹ để làm nổi bật các khối màu trắng */
 }
 /* Nút 3 gạch */
 .menu-container { margin-right: 15px; position: relative; }
