@@ -114,11 +114,10 @@ function loadAlbums() {
 
         // THAY THẾ TOÀN BỘ ĐOẠN ONCLICK CŨ BẰNG ĐOẠN NÀY:
         div.querySelector('.btn-delete-album').onclick = (e) => {
-            e.stopPropagation();
-            // Gọi hàm mở bảng nhập mật khẩu bảo mật
-            // Tôi đặt tên là 'ALBUM_LOCAL' để máy phân biệt được đây là xóa Album trên máy
-            askDelete('ALBUM_LOCAL:' + index); 
-        };
+    e.stopPropagation();
+    // Thay prompt bằng hàm askDelete của mình
+    askDelete('ALBUM_LOCAL:' + index); 
+};
         
         container.appendChild(div);
     });
@@ -170,14 +169,6 @@ function loadVideos() {
     });
 }
 
-function deleteVideo(index) {
-    if (prompt("Mật khẩu xóa Video:") === "HGF2026") {
-        let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
-        videos.splice(index, 1);
-        localStorage.setItem('myVideos', JSON.stringify(videos));
-        loadVideos();
-    }
-}
 
 // ==========================================================
 // 4. KHỞI CHẠY (INIT)
