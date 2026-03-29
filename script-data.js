@@ -331,10 +331,11 @@ function askDelete(path) {
     const modal = document.getElementById('passwordModal');
     if(modal) {
         modal.style.display = 'flex';
-        document.getElementById('adminPasswordInput').value = ''; 
-        document.getElementById('adminPasswordInput').focus();
-    } else {
-        alert("Anh Khải ơi, anh chưa thêm bảng passwordModal vào file index.html rồi!");
+        // Đảm bảo ô nhập liệu trống và hiện chữ "Nhập mật khẩu"
+        const inputField = document.getElementById('adminPasswordInput');
+        inputField.value = ''; 
+        inputField.placeholder = "Nhập mật khẩu"; // Đổi nội dung ở đây
+        inputField.focus();
     }
 }
 
