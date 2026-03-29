@@ -72,7 +72,7 @@ function handleJerseyUpload() {
 // Hàm xóa Áo đấu trên Firebase
 function deleteJerseyFirebase(id) {
     const password = prompt("Xác nhận quyền quản trị: Nhập mật khẩu để xóa mẫu áo.");
-    if (password === "HGF2026") {
+    if (password === "") {
         database.ref('jerseys/' + id).remove().then(() => {
             alert("Đã xóa xong trên tất cả thiết bị!");
         });
@@ -116,7 +116,7 @@ function loadAlbums() {
         div.querySelector('.btn-delete-album').onclick = (e) => {
             e.stopPropagation();
             const password = prompt("Xác nhận quyền quản trị: Vui lòng nhập mật khẩu để xóa album này.");
-            if (password === "HGF2026") {
+            if (password === "") {
                 if (confirm("Xóa vĩnh viễn album '" + album.title + "'?")) {
                     albums.splice(index, 1);
                     localStorage.setItem('myAlbums', JSON.stringify(albums));
@@ -175,7 +175,7 @@ function loadVideos() {
 }
 
 function deleteVideo(index) {
-    if (prompt("Mật khẩu xóa Video:") === "HGF2026") {
+    if (prompt("Mật khẩu xóa Video:") === "") {
         let videos = JSON.parse(localStorage.getItem('myVideos')) || [];
         videos.splice(index, 1);
         localStorage.setItem('myVideos', JSON.stringify(videos));
@@ -324,7 +324,7 @@ function addMember() {
 }
 // Hàm xóa Thành viên trên Firebase
 function deleteMemberFirebase(id) {
-    if (prompt("Nhập mật khẩu quản trị để xóa thành viên:") === "HGF2026") {
+    if (prompt("Nhập mật khẩu quản trị để xóa thành viên:") === "") {
         database.ref('members/' + id).remove().then(() => {
             alert("Đã xóa thành viên khỏi hệ thống!");
         });
