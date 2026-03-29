@@ -12,7 +12,6 @@ if (!firebase.apps.length) {
     };
     firebase.initializeApp(hgfConfig);
 }
-var database = firebase.database();
 
 const form = document.getElementById('albumForm');
 const container = document.getElementById('albumContainer');
