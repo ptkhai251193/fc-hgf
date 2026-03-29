@@ -42,18 +42,29 @@ database.ref('jerseys').on('value', (snapshot) => {
     }
 });
 
-// Lắng nghe Thành Viên, Album, Video (Giữ nguyên logic của anh nhưng tối ưu)
+
+// Lắng nghe Thành Viên và hiển thị ra màn hình
 database.ref('members').on('value', (s) => {
     const data = s.val();
     const grid = document.getElementById('memberGrid');
     if (!grid) return;
-    grid.innerHTML = data ? Object.keys(data).map(k => `
-        <div class="member-card" style="position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center;">
-            <button onclick="deleteData('members/${k}')" style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;border-radius:50%;width:25px;height:25px;">×</button>
-            <img src="${data[k].img}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid #FFD700;">
-            <h3 style="color:white; margin:10px 0 5px 0;">${data[k].name}</h3>
-            <p style="color:#FFD700; font-weight:bold;">Số áo: ${data[k].number}</p>
-        </div>`).join('') : "";
+    
+    grid.innerHTML = data ? Object.keys(data).map(k => {
+        const member = data[k];
+        return `
+        <div class="member-card" style="position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center; border: 1px solid rgba(255,255,255,0.2);">
+            <button onclick="deleteData('members/${k}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer;">×</button>
+            
+            <img src="${member.image || member.img}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #FFD700; margin-bottom:10px;">
+            
+            <h3 style="color:white; margin:0 0 5px 0; font-size:18px;">${member.name}</h3>
+            <p style="color:#FFD700; font-weight:bold; margin:0 0 8px 0;">Số áo: ${member.number}</p>
+            
+            <p style="color:#00FF00; font-weight:bold; font-size:13px; margin:0;">
+                🎂 NS: ${member.birth ? formatBirthDate(member.birth) : 'Chưa cập nhật'}
+            </p>
+        </div>`;
+    }).join('') : "";
 });
 
 database.ref('albums').on('value', (snapshot) => {
@@ -132,13 +143,33 @@ function deleteData(path) {
 function addMember() {
     const name = document.getElementById('memName').value;
     const number = document.getElementById('memNumber').value;
-    const file = document.getElementById('memImg').files[0];
-    if (!file || !name) return alert("Thiếu thông tin!");
-    const r = new FileReader();
-    r.onload = (e) => {
-        database.ref('members').push({ name, number, img: e.target.result }).then(() => { alert("Xong!"); toggleAddMemberForm(); });
-    };
-    r.readAsDataURL(file);
+    const birth = document.getElementById('memBirth').value; 
+    const imgFile = document.getElementById('memImg').files[0];
+
+    if (name && number && imgFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imageData = e.target.result;
+            
+            database.ref('members').push({
+                name: name,
+                number: number,
+                birth: birth, 
+                image: imageData, // Lưu ảnh dưới dạng mã hóa
+                timestamp: Date.now()
+            }).then(() => {
+                document.getElementById('memName').value = '';
+                document.getElementById('memNumber').value = '';
+                document.getElementById('memBirth').value = '';
+                document.getElementById('memImg').value = '';
+                alert("Đã thêm thành viên mới!");
+                toggleAddMemberForm();
+            });
+        };
+        reader.readAsDataURL(imgFile);
+    } else {
+        alert("Anh Khải hãy nhập đủ tên, số áo và chọn ảnh nhé!");
+    }
 }
 
 async function addAlbum() {
@@ -170,9 +201,19 @@ function openAlbumDetail(id) {
         document.getElementById('photoGrid').innerHTML = a.photos.map(src => `<img src="${src}" onclick="viewPhoto('${src}')" style="width:100%; height:150px; object-fit:cover; border-radius:8px; cursor:pointer;">`).join('');
     });
 }
+function formatBirthDate(dateStr) {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr; 
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+}
 function viewPhoto(src) { document.getElementById('fullPhoto').src = src; document.getElementById('photoViewer').style.display = 'flex'; }
 function toggleAddMemberForm() { const f = document.getElementById('addMemberForm'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
 function openAlbumModal() { document.getElementById('modalCreateAlbum').style.display = 'block'; }
 function closeAlbumModal() { document.getElementById('modalCreateAlbum').style.display = 'none'; }
 function openVideoModal() { document.getElementById('modalVideoLink').style.display = 'flex'; }
 function closeVideoModal() { document.getElementById('modalVideoLink').style.display = 'none'; }
+
