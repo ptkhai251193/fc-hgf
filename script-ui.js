@@ -123,7 +123,7 @@ function handleJerseyUpload() {
 
 // Hàm xóa dữ liệu chung
 function deleteData(path) {
-    if (prompt("Nhập mật khẩu quản trị (HGF2026):") === "HGF2026") {
+    if (prompt("Nhập mật khẩu quản trị:") === "HGF2026") {
         database.ref(path).remove().then(() => alert("Đã xóa xong!"));
     } else { alert("Sai mật khẩu!"); }
 }
