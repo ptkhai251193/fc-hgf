@@ -238,5 +238,38 @@
     <script src="script-data.js"></script>
     <script src="script-detail.js"></script>
 
+    <script>
+        // Hàm đóng/mở Side Menu nhanh (nếu chưa có trong Ui.js)
+        function toggleMenu() {
+    const menu = document.getElementById('sidebar');
+    if (!menu) return;
+    
+    // Nếu đang mở thì đóng, đang đóng thì mở
+    if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+    } else {
+        menu.style.display = 'block';
+    }
+}
+
+        // Hàm xử lý quay lại trang chủ
+        function goBackHome() {
+            document.getElementById('thanh-vien-page').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+        
+        // Hàm chuyển sang tab thành viên
+        function showTab(tab) {
+    if(tab === 'thanh-vien') {
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('thanh-vien-page').style.display = 'block';
+        
+        // Tự động đóng menu sau khi chuyển tab
+        const menu = document.getElementById('sidebar');
+        if (menu) menu.style.display = 'none';
+    }
+}
+    </script>
 </body>
 </html>
