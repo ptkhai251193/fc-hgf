@@ -241,9 +241,16 @@
     <script>
         // Hàm đóng/mở Side Menu nhanh (nếu chưa có trong Ui.js)
         function toggleMenu() {
-            const menu = document.getElementById('sidebar');
-            menu.style.display = (menu.style.display === 'none' || menu.style.display === '') ? 'block' : 'none';
-        }
+    const menu = document.getElementById('sidebar');
+    if (!menu) return;
+    
+    // Nếu đang mở thì đóng, đang đóng thì mở
+    if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+    } else {
+        menu.style.display = 'block';
+    }
+}
 
         // Hàm xử lý quay lại trang chủ
         function goBackHome() {

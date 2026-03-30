@@ -197,12 +197,23 @@ function showTab(tabName) {
     if (tabName === 'thanh-vien') {
         document.getElementById("main-content").style.display = "none"; 
         document.getElementById("thanh-vien-page").style.display = "block";
-        toggleMenu(); window.scrollTo(0,0);
+        
+        // Thêm dòng này để ẩn menu ngay lập tức khi chọn "Thành viên"
+        const menu = document.getElementById('sidebar');
+        if (menu) menu.style.display = 'none';
+        
+        window.scrollTo(0,0);
     }
 }
 function goBackHome() {
     document.getElementById("thanh-vien-page").style.display = "none";
     document.getElementById("main-content").style.display = "block";
+    
+    // Thêm dòng này để ẩn menu ngay khi về "Trang chủ"
+    const menu = document.getElementById('sidebar');
+    if (menu) menu.style.display = 'none';
+    
+    window.scrollTo(0,0);
 }
 function closeTab() { document.getElementById("tabContentOverlay").style.display = "none"; }
 function openJerseyModal() { document.getElementById('modalJersey').style.display = 'block'; }
