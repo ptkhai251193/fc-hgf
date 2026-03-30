@@ -146,30 +146,51 @@ function addMember() {
     const birth = document.getElementById('memBirth').value; 
     const imgFile = document.getElementById('memImg').files[0];
 
-    if (name && number && imgFile) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const imageData = e.target.result;
-            
-            database.ref('members').push({
-                name: name,
-                number: number,
-                birth: birth, 
-                image: imageData, // Lưu ảnh dưới dạng mã hóa
-                timestamp: Date.now()
-            }).then(() => {
-                document.getElementById('memName').value = '';
-                document.getElementById('memNumber').value = '';
-                document.getElementById('memBirth').value = '';
-                document.getElementById('memImg').value = '';
-                alert("Đã thêm thành viên mới!");
-                toggleAddMemberForm();
-            });
-        };
-        reader.readAsDataURL(imgFile);
-    } else {
-        alert("Anh Khải hãy nhập đủ tên, số áo và chọn ảnh nhé!");
+    // Kiểm tra đầu vào
+    if (!name || !number) {
+        alert("Anh Khải ơi, nhập thiếu Tên hoặc Số áo rồi!");
+        return;
     }
+
+    if (!imgFile) {
+        alert("Anh chưa chọn ảnh cho thành viên này nhé!");
+        return;
+    }
+
+    // ĐOẠN QUAN TRỌNG: Đọc ảnh để điện thoại hiểu được
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        const imageData = e.target.result; // Chuyển ảnh thành mã dữ liệu
+        
+        // Gửi lên Firebase
+        database.ref('members').push({
+            name: name,
+            number: number,
+            birth: birth, 
+            img: imageData, // Lưu vào trường 'img' để khớp với lệnh map() ở trên của anh
+            timestamp: Date.now()
+        }).then(() => {
+            // Xóa sạch ô nhập sau khi thành công
+            document.getElementById('memName').value = '';
+            document.getElementById('memNumber').value = '';
+            document.getElementById('memBirth').value = '';
+            document.getElementById('memImg').value = '';
+            
+            alert("✅ Đã thêm thành viên thành công!");
+            
+            // Đóng form nếu anh có hàm này
+            if (typeof toggleAddMemberForm === 'function') toggleAddMemberForm();
+        }).catch((error) => {
+            alert("Lỗi kết nối Firebase: " + error.message);
+        });
+    };
+
+    reader.onerror = function() {
+        alert("Lỗi khi đọc file ảnh từ điện thoại!");
+    };
+
+    reader.readAsDataURL(imgFile);
 }
 
 async function addAlbum() {
