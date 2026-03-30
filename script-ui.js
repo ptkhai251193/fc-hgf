@@ -52,7 +52,7 @@ database.ref('members').on('value', (s) => {
     grid.innerHTML = data ? Object.keys(data).map(k => {
         const member = data[k];
         return `
-        <div class="member-card" style="position:relative; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; text-align:center; border: 1px solid rgba(255,255,255,0.2);">
+        <div class="member-card" style="position:relative; background:rgba(255, 255, 255, 0.72); padding:15px; border-radius:15px; text-align:center; border: 1px solid rgba(255,255,255,0.2);">
             <button onclick="deleteData('members/${k}')" style="position:absolute; top:5px; right:5px; background:red; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer;">×</button>
             
             <img src="${member.image || member.img}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid #FFD700; margin-bottom:10px;">
@@ -61,7 +61,7 @@ database.ref('members').on('value', (s) => {
             <p style="color:#FFD700; font-weight:bold; margin:0 0 8px 0;">Số áo: ${member.number}</p>
             
             <p style="color:#00FF00; font-weight:bold; font-size:13px; margin:0;">
-                🎂 NS: ${member.birth ? formatBirthDate(member.birth) : 'Chưa cập nhật'}
+                🎂 Sinh Nhật: ${member.birth ? formatBirthDate(member.birth) : 'Chưa cập nhật'}
             </p>
         </div>`;
     }).join('') : "";
