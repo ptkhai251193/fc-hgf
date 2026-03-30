@@ -76,7 +76,7 @@
             <div class="section-header">
                 <h2 class="title-member">THÀNH VIÊN HGF</h2>
                 <div class="button-group">
-                    <button class="add-btn" style="background: #0ae307;" onclick="toggleAddMemberForm()">+ Thêm Thành Viên</button>
+                    <button class="add-btn" style="background: #e5f22a;" onclick="toggleAddMemberForm()">+ Thêm Thành Viên</button>
                     <button class="add-btn" onclick="goBackHome()">← Quay lại</button>
                 </div>
             </div>
@@ -85,10 +85,13 @@
                 <div class="form-grid">
                     <input type="text" id="memName" placeholder="Họ và tên">
                     <input type="number" id="memNumber" placeholder="Số áo">
+        
+                    <input type="date" id="memBirth" style="padding: 10px; border-radius: 5px; border: 1px solid #ddd; background: white; color: #333;">
+        
                     <input type="file" id="memImg" accept="image/*">
-                </div>
-                <button class="save-btn" onclick="addMember()" style="margin-top: 10px;">Lưu Thành Viên</button>
             </div>
+            <button class="save-btn" onclick="addMember()" style="margin-top: 10px; width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">Lưu Thành Viên</button>
+        </div>
             <div id="memberGrid" class="member-grid"></div>
         </div>
     </div>
@@ -225,7 +228,7 @@
 
     <footer style="text-align: center; padding: 30px; color: #888; font-size: 13px; background: #1a1a1a;">
         <p>© 2026 FC HGF - Long Xuyên, An Giang</p>
-        <p>Phát triển bởi Manager HGF với hỗ trợ từ AI</p>
+        <p>Phát triển bởi Phan Trọng Khải</p>
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -251,11 +254,13 @@
         
         // Hàm chuyển sang tab thành viên
         function showTab(tab) {
-            if(tab === 'thanh-vien') {
-                document.getElementById('main-content').style.display = 'none';
-                document.getElementById('thanh-vien-page').style.display = 'block';
-            }
-        }
+    if(tab === 'thanh-vien') {
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('thanh-vien-page').style.display = 'block';
+        // Đóng menu sau khi chọn
+        toggleMenu(); 
+    }
+}
     </script>
 </body>
 </html>
