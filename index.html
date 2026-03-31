@@ -103,7 +103,9 @@
     <header class="main-heading" style="background: rgba(229, 202, 206, 0.8); padding: 10px 0;">
     <div class="container-header" style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: start; gap: 20px; padding: 0 15px;">
         
-        <div class="menu-icon" onclick="toggleMenu()" style="cursor:pointer; font-size: 35px; color: black; line-height: 1;">☰</div>
+        <div class="menu-icon" 
+            onclick="var m=document.getElementById('sidebar'); m.style.display=(m.style.display==='block')?'none':'block';" 
+            style="cursor:pointer; font-size: 35px; color: black;">☰</div>
         
         <div class="header-logo">
             <img src="logo.png" alt="Logo FC.HGF" style="width: 80px; height: 80px; object-fit: contain; display: block;">
