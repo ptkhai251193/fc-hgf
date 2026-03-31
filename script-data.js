@@ -259,3 +259,15 @@ function handleJerseyUpload() {
     };
     reader.readAsDataURL(file);
 }
+// Hàm để đóng/mở menu khi bấm vào nút 3 gạch
+function toggleMenu() {
+    const menu = document.getElementById('sidebar');
+    if (!menu) return;
+    
+    // Kiểm tra trạng thái hiện tại để đóng hoặc mở
+    if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+    } else {
+        menu.style.display = 'block';
+    }
+}
