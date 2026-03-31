@@ -193,23 +193,25 @@ loadVideos();
 
 // Các hàm UI giữ nguyên
 function toggleMenu() { document.getElementById("sideMenu").classList.toggle("active"); }
-function showTab(tabName) {
-    if (tabName === 'thanh-vien') {
-        document.getElementById("main-content").style.display = "none"; 
-        document.getElementById("thanh-vien-page").style.display = "block";
+function showTab(tab) {
+    if(tab === 'thanh-vien') {
+        document.getElementById('main-content').style.display = 'none';
+        document.getElementById('thanh-vien-page').style.display = 'block';
         
-        // Thêm dòng này để ẩn menu ngay lập tức khi chọn "Thành viên"
+        // Lệnh đóng menu ngay lập tức
         const menu = document.getElementById('sidebar');
         if (menu) menu.style.display = 'none';
         
         window.scrollTo(0,0);
     }
 }
+
+// Hàm quay lại trang chủ và TỰ ĐÓNG MENU
 function goBackHome() {
-    document.getElementById("thanh-vien-page").style.display = "none";
-    document.getElementById("main-content").style.display = "block";
+    document.getElementById('thanh-vien-page').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
     
-    // Thêm dòng này để ẩn menu ngay khi về "Trang chủ"
+    // Lệnh đóng menu ngay lập tức
     const menu = document.getElementById('sidebar');
     if (menu) menu.style.display = 'none';
     
