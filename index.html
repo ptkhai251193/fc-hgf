@@ -237,31 +237,46 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        function toggleMenu() {
-            const menu = document.getElementById('sidebar');
-            if (menu) {
-                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-            }
+    // 1. Hàm đóng/mở menu khi bấm nút ☰
+    function toggleMenu() {
+        const menu = document.getElementById('sidebar');
+        if (!menu) return;
+        // Nếu đang hiện thì ẩn (none), đang ẩn thì hiện (block)
+        if (menu.style.display === 'block') {
+            menu.style.display = 'none';
+        } else {
+            menu.style.display = 'block';
         }
+    }
 
-        function showTab(tab) {
-            if(tab === 'thanh-vien') {
-                document.getElementById('main-content').style.display = 'none';
-                document.getElementById('thanh-vien-page').style.display = 'block';
-                const menu = document.getElementById('sidebar');
-                if (menu) menu.style.display = 'none';
-                window.scrollTo(0,0);
-            }
-        }
-
-        function goBackHome() {
-            document.getElementById('thanh-vien-page').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
+    // 2. Hàm chuyển sang trang Thành viên và BUỘC menu phải ẩn
+    function showTab(tab) {
+        if(tab === 'thanh-vien') {
+            // Lệnh quan trọng nhất: Ẩn menu ngay lập tức
             const menu = document.getElementById('sidebar');
             if (menu) menu.style.display = 'none';
+
+            // Chuyển đổi giao diện trang
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('thanh-vien-page').style.display = 'block';
+            
             window.scrollTo(0,0);
         }
-    </script>
+    }
+
+    // 3. Hàm quay về Trang chủ và BUỘC menu phải ẩn
+    function goBackHome() {
+        // Lệnh quan trọng nhất: Ẩn menu ngay lập tức
+        const menu = document.getElementById('sidebar');
+        if (menu) menu.style.display = 'none';
+
+        // Quay lại giao diện chính
+        document.getElementById('thanh-vien-page').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        
+        window.scrollTo(0,0);
+    }
+</script>
 
     <script src="script-ui.js"></script>
     <script src="script-data.js"></script>
