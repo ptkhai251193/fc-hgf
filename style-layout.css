@@ -543,3 +543,12 @@ body {
 #videoContainer iframe {
     border-radius: 10px;
 }
+/* Ẩn thanh cuộn cho Chrome, Safari và Opera */
+#videoContainer::-webkit-scrollbar {
+    display: none;
+}
+
+#videoContainer {
+    -ms-overflow-style: none;  /* IE và Edge */
+    scrollbar-width: none;  /* Firefox */
+}

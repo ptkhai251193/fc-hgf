@@ -89,13 +89,34 @@ database.ref('videos').on('value', (s) => {
     const data = s.val();
     const container = document.getElementById('videoContainer');
     if (!container || !data) return;
+
+    // CẤU HÌNH VUỐT NGANG (SCROLL SNAP)
+    container.style.display = "flex";
+    container.style.flexWrap = "nowrap"; // Không cho xuống dòng
+    container.style.overflowX = "auto"; // Cho phép cuộn ngang
+    container.style.webkitOverflowScrolling = "touch"; // Vuốt mượt trên iPhone
+    container.style.scrollSnapType = "x mandatory"; // Tự động dừng đúng khung video
+    container.style.gap = "15px";
+    container.style.padding = "10px 20px";
+    container.style.scrollbarWidth = "none"; // Ẩn thanh cuộn trên máy tính
+    container.style.msOverflowStyle = "none";
+
     container.innerHTML = Object.keys(data).map(k => {
         let v = data[k];
         let videoId = v.url.includes('v=') ? v.url.split('v=')[1].split('&')[0] : v.url.split('/').pop();
-        return `<div style="margin:10px; position:relative; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; width:100%; max-width:400px; display:inline-block;">
-                    <span onclick="deleteData('videos/${k}')" style="position:absolute; top:5px; right:15px; color:white; font-size:30px; cursor:pointer; z-index:10;">&times;</span>
-                    <iframe width="100%" height="210" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="border-radius:8px;"></iframe>
-                </div>`;
+        
+        return `
+        <div style="flex: 0 0 85%; scroll-snap-align: center; position:relative; background:rgba(255,255,255,0.1); padding:10px; border-radius:15px; border: 1px solid rgba(255,255,255,0.2); box-sizing:border-box;">
+            <span onclick="deleteData('videos/${k}')" style="position:absolute; top:-5px; right:-5px; color:white; background:red; width:25px; height:25px; border-radius:50%; text-align:center; line-height:25px; cursor:pointer; z-index:10;">&times;</span>
+            
+            <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:10px;">
+                <iframe 
+                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" 
+                    src="https://www.youtube.com/embed/${videoId}" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>`;
     }).reverse().join('');
 });
 
