@@ -71,17 +71,18 @@ database.ref('albums').on('value', (snapshot) => {
     const data = snapshot.val();
     const container = document.getElementById('albumContainer');
     if (!container || !data) return;
-    container.innerHTML = Object.keys(data).map(key => `
-        <div class="album-card" style="margin:10px; background:white; border-radius:15px; display:inline-block; width:250px; position:relative; border:2px solid #ddd; overflow:hidden;">
-            <span onclick="event.stopPropagation(); deleteData('albums/${key}')" style="position:absolute; top:5px; right:10px; color:red; font-size:25px; cursor:pointer; z-index:10;">&times;</span>
-            <div onclick="openAlbumDetail('${key}')">
-                <img src="${data[key].cover || data[key].photos[0]}" style="width:100%; height:160px; object-fit:cover;">
-                <div style="padding:10px; text-align:center;">
-                    <h4 style="color:#333; margin:5px 0;">${data[key].title}</h4>
-                    <p style="color:#666; font-size:11px; margin:0;">👤 ${data[key].author || 'Quản trị'} | 📅 ${data[key].date}</p>
-                </div>
+
+    container.innerHTML = Object.keys(data).map(key => {
+        const item = data[key];
+        return `
+        <div class="album-card" onclick="openAlbumDetail('${key}')" style="margin:10px; background:white; border-radius:15px; display:inline-block; width:250px; cursor:pointer;">
+            <img src="${item.cover}" style="width:100%; height:160px; object-fit:cover; border-radius:15px 15px 0 0;">
+            <div style="padding:10px; text-align:center;">
+                <h4 style="color:#333; margin:5px 0;">${item.title}</h4>
+                <p style="color:#666; font-size:11px;">📅 ${item.date}</p>
             </div>
-        </div>`).reverse().join('');
+        </div>`;
+    }).reverse().join('');
 });
 
 database.ref('videos').on('value', (s) => {
@@ -198,13 +199,48 @@ async function addAlbum() {
     const author = document.getElementById('inputAuthor').value || "Quản trị";
     const date = document.getElementById('inputDate').value;
     const files = document.getElementById('inputImage').files;
-    if (!title || !date || files.length === 0) return alert("Thiếu thông tin!");
-    const photoPromises = Array.from(files).map(file => new Promise(res => {
-        const r = new FileReader(); r.onload = (e) => res(e.target.result); r.readAsDataURL(file);
-    }));
+
+    if (!title || !date || files.length === 0) return alert("Thiếu thông tin album anh ơi!");
+
+    // Hàm nén ảnh dùng Canvas
+    const compress = (file, quality, maxWidth) => {
+        return new Promise((res) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const scale = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    res(canvas.toDataURL('image/jpeg', quality));
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    alert("⏳ Đang nén ảnh Album, anh đợi tí nhé...");
+
+    // Nén ảnh bìa (600px) và danh sách ảnh (800px)
+    const cover = await compress(files[0], 0.6, 600);
+    const photoPromises = Array.from(files).map(file => compress(file, 0.5, 800));
     const allPhotos = await Promise.all(photoPromises);
-    database.ref('albums').push({ title, author, date, cover: allPhotos[0], photos: allPhotos, timestamp: Date.now() })
-    .then(() => { alert("✅ Đã đăng!"); closeAlbumModal(); });
+
+    database.ref('albums').push({
+        title,
+        author,
+        date,
+        cover: cover,
+        photos: allPhotos,
+        timestamp: Date.now()
+    }).then(() => {
+        alert("✅ Đã đăng Album nhẹ tênh!");
+        closeAlbumModal();
+    });
 }
 
 function addVideo() {

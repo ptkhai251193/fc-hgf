@@ -273,6 +273,11 @@ body {
     background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.05));
     pointer-events: none;
 }
+.album-card img {
+    will-change: transform;
+    image-rendering: -webkit-optimize-contrast;
+    loading: lazy; /* Chỉ tải khi cuộn tới */
+}
 /* Bố cục Header cho từng phần */
 .section-header-group {
     display: flex;
