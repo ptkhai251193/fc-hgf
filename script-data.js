@@ -191,32 +191,7 @@ function deleteVideo(index) {
 loadAlbums();
 loadVideos();
 
-// Các hàm UI giữ nguyên
-function toggleMenu() { document.getElementById("sideMenu").classList.toggle("active"); }
-function showTab(tab) {
-    if(tab === 'thanh-vien') {
-        document.getElementById('main-content').style.display = 'none';
-        document.getElementById('thanh-vien-page').style.display = 'block';
-        
-        // Lệnh đóng menu ngay lập tức
-        const menu = document.getElementById('sidebar');
-        if (menu) menu.style.display = 'none';
-        
-        window.scrollTo(0,0);
-    }
-}
 
-// Hàm quay lại trang chủ và TỰ ĐÓNG MENU
-function goBackHome() {
-    document.getElementById('thanh-vien-page').style.display = 'none';
-    document.getElementById('main-content').style.display = 'block';
-    
-    // Lệnh đóng menu ngay lập tức
-    const menu = document.getElementById('sidebar');
-    if (menu) menu.style.display = 'none';
-    
-    window.scrollTo(0,0);
-}
 function closeTab() { document.getElementById("tabContentOverlay").style.display = "none"; }
 function openJerseyModal() { document.getElementById('modalJersey').style.display = 'block'; }
 // Hàm 1: Mở cái bảng (Modal) khi bấm nút "Thêm Áo"

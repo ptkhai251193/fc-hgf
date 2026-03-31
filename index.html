@@ -236,9 +236,37 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('sidebar');
+            if (menu) {
+                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+            }
+        }
+
+        function showTab(tab) {
+            if(tab === 'thanh-vien') {
+                document.getElementById('main-content').style.display = 'none';
+                document.getElementById('thanh-vien-page').style.display = 'block';
+                const menu = document.getElementById('sidebar');
+                if (menu) menu.style.display = 'none';
+                window.scrollTo(0,0);
+            }
+        }
+
+        function goBackHome() {
+            document.getElementById('thanh-vien-page').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            const menu = document.getElementById('sidebar');
+            if (menu) menu.style.display = 'none';
+            window.scrollTo(0,0);
+        }
+    </script>
+
     <script src="script-ui.js"></script>
     <script src="script-data.js"></script>
     <script src="script-detail.js"></script>
+</body>
 
 </body>
 </html>
